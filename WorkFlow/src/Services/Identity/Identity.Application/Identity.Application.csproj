@@ -6,4 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Identity.Core\Identity.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UseCases\Registrate\" />
+    <Folder Include="UseCases\Login\" />
+    <Folder Include="UseCases\RefreshToken\" />
+    <Folder Include="UseCases\Logout\" />
+  </ItemGroup>
+
 </Project>
