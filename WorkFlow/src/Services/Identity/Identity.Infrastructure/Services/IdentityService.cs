@@ -53,7 +53,7 @@ namespace Identity.Infrastructure.Services
 						}
 				});
 
-			var token = await _tokenService.GenerateJwtToken(existingUser);
+			var token = await _tokenService.GenerateToken(existingUser);
 
 			return (token);
 		}
@@ -107,7 +107,7 @@ namespace Identity.Infrastructure.Services
 
 			if (isCreated.Succeeded)
 			{
-				var token = await _tokenService.GenerateJwtToken(newUser);
+				var token = await _tokenService.GenerateToken(newUser);
 
 				return (token);
 			}

@@ -35,7 +35,8 @@ namespace Identity.Infrastructure.Services
 			_tokenValidationParameters = tokenValidationParameters;
 		}
 
-		public async Task<AuthResult> GenerateJwtToken(User user)
+
+		private SecurityToken GenerateJwtToken(User user)
 		{
 			var jwtTokenHandler = new JwtSecurityTokenHandler();
 
@@ -56,28 +57,7 @@ namespace Identity.Infrastructure.Services
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
 			};
 
-			var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-			var jwtToken = jwtTokenHandler.WriteToken(token);
-
-			var refreshToken = new RefreshToken()
-			{
-				JwtId = token.Id,
-				Token = RandomStringGeneration(8),
-				AddedDate = DateTime.UtcNow,
-				ExpiryDate = DateTime.UtcNow.AddMonths(1),
-				IsRevoked = false,
-				IsUsed = false,
-				UserId = user.Id.ToString()
-			};
-
-			await _refreshTokenService.CreateAsync(refreshToken);
-
-			return new AuthResult()
-			{
-				Result = true,
-				RefreshToken = refreshToken.Token,
-				Token = jwtToken
-			};
+			 return jwtTokenHandler.CreateToken(tokenDescriptor);
 		}
 
 		private string RandomStringGeneration(int lenght)
@@ -165,12 +145,17 @@ namespace Identity.Infrastructure.Services
 					}
 					};
 
-				storeToken.IsUsed = true;
-				await _refreshTokenService.UpdateAsync(storeToken.Id!, storeToken);
-
 				var dbUser = await _userManager.FindByIdAsync(storeToken.UserId!);
 
-				return await GenerateJwtToken(dbUser!);
+				var token = GenerateJwtToken(dbUser);
+				var jwtToken = jwtTokenHandler.WriteToken(token);
+
+				return new AuthResult()
+				{
+					Result = true,
+					Token = jwtToken,
+					RefreshToken = tokenRequest.RefreshToken
+				};
 			}
 			catch(SecurityTokenValidationException ex)
 			{
@@ -185,6 +170,34 @@ namespace Identity.Infrastructure.Services
 				};
 			}
 			
+		}
+
+		public async Task<AuthResult> GenerateToken(User user)
+		{
+			var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+			var token = GenerateJwtToken(user);
+			var jwtToken = jwtTokenHandler.WriteToken(token);
+
+			var refreshToken = new RefreshToken()
+			{
+				JwtId = token.Id,
+				Token = RandomStringGeneration(8),
+				AddedDate = DateTime.UtcNow,
+				ExpiryDate = DateTime.UtcNow.AddMonths(1),
+				IsRevoked = false,
+				IsUsed = false,
+				UserId = user.Id.ToString()
+			};
+
+			await _refreshTokenService.CreateAsync(refreshToken);
+
+			return new AuthResult()
+			{
+				Result = true,
+				RefreshToken = refreshToken.Token,
+				Token = jwtToken
+			};
 		}
 	}
 }

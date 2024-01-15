@@ -11,7 +11,7 @@ namespace Identity.Infrastructure.Services.Interfaces
 {
 	public interface ITokenService
 	{
-		public Task<AuthResult> GenerateJwtToken(User user);
+		public Task<AuthResult> GenerateToken(User user);
 		public Task<AuthResult?> VerifyAndGenerateToken(TokenRequest tokenRequest);
 
 	}
