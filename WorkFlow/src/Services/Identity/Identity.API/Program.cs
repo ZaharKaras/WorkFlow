@@ -1,4 +1,5 @@
 using Identity.API.Extensions;
+using Identity.API.Middlewares;
 using Identity.Infrastructure.Services;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.OpenApi.Models;
@@ -33,6 +34,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseMiddleware<CustomExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

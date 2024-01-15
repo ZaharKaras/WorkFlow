@@ -1,5 +1,6 @@
 ﻿using AspNetCore.Identity.MongoDbCore.Models;
 using MongoDbGenericRepository.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace Identity.Core.Entities

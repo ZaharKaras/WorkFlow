@@ -3,12 +3,8 @@ using Identity.Core.Entities;
 using Identity.Core.Models;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Identity.Infrastructure.Services
 {
@@ -17,15 +13,18 @@ namespace Identity.Infrastructure.Services
 		private readonly UserManager<User> _userManager;
 		private readonly IRefreshTokenService _refreshTokenService;
 		private readonly ITokenService _tokenService;
+		private readonly ILogger<IdentityService> _logger;
 
 		public IdentityService(
 			UserManager<User> userManager,
 			IRefreshTokenService refreshTokenService,
-			ITokenService tokenService)
+			ITokenService tokenService,
+			ILogger<IdentityService> logger)
 		{
 			_userManager = userManager;
 			_refreshTokenService = refreshTokenService;
 			_tokenService = tokenService;
+			_logger = logger;
 		}
 		public async Task<AuthResult> Login(LoginRequest loginRequest)
 		{
@@ -55,6 +54,8 @@ namespace Identity.Infrastructure.Services
 
 			var token = await _tokenService.GenerateToken(existingUser);
 
+			_logger.LogInformation($"{existingUser.UserName} is login");
+
 			return (token);
 		}
 
@@ -68,6 +69,9 @@ namespace Identity.Infrastructure.Services
 
 			storeToken.IsRevoked = true;
 			await _refreshTokenService.UpdateAsync(storeToken.Id!, storeToken);
+
+			_logger.LogInformation("Token is updated");
+
 			return new AuthResult()
 			{
 				Result = true,
@@ -91,9 +95,9 @@ namespace Identity.Infrastructure.Services
 				{
 					Result = false,
 					Errors = new List<string>()
-						{
-							"Email already exist"
-						}
+					{
+						"Email already exist"
+					}
 				});
 
 
@@ -112,13 +116,15 @@ namespace Identity.Infrastructure.Services
 				return (token);
 			}
 
+			_logger.LogInformation($"{registerRequest.Name} is registrated");
+
 			return (new AuthResult()
 			{
 				Result = false,
 				Errors = new List<string>()
-					{
-						"Server error"
-					}
+				{
+						isCreated.Errors.ToString()!,
+				}
 			});
 		}
 	}

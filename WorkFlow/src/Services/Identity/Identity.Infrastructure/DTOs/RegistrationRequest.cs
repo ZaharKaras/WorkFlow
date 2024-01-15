@@ -9,6 +9,7 @@ namespace Identity.API.DTOs
 		[Required]
 		public string Name { get; set; } = null!;
 		[Required]
+		[DataType(DataType.Password)]
 		public string Password { get; set; } = null!;
 		[Required, Compare(nameof(Password), ErrorMessage = "Password do not math")]
 		public string ComfirmPassword { get; set; } = null!;
