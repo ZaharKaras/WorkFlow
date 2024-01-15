@@ -5,6 +5,7 @@ using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -26,6 +27,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ICacheService, CacheService>();
 
+builder.Host.UseSerilog((context, configuration) => 
+	configuration.ReadFrom.Configuration(context.Configuration));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -34,6 +38,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseSerilogRequestLogging();
 
 app.UseMiddleware<CustomExceptionMiddleware>();
 
