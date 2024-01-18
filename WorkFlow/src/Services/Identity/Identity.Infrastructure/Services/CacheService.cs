@@ -1,5 +1,6 @@
 ﻿using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Bson.IO;
 using StackExchange.Redis;
 using System;
@@ -14,9 +15,9 @@ namespace Identity.Infrastructure.Services
 	public class CacheService : ICacheService
 	{
 		private IDatabase _db;
-		public CacheService()
+		public CacheService(IConfiguration config)
 		{
-			var redis = ConnectionMultiplexer.Connect("localhost:6379");
+			var redis = ConnectionMultiplexer.Connect(config.GetSection("Redis:ConnectionString").Value!);
 			_db = redis.GetDatabase();
 		}
 		public async Task<T?> GetData<T>(string key) where T : class
