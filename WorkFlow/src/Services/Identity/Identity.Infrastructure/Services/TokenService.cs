@@ -80,86 +80,39 @@ namespace Identity.Infrastructure.Services
 
 		public async Task<AuthResult?> VerifyAndGenerateToken(TokenRequest tokenRequest)
 		{
-			try
+			var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+			var tokenInVerification =
+				jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParameters, out var validatedToken);
+
+			if (validatedToken is JwtSecurityToken jwtSecurityToken)
 			{
-				var jwtTokenHandler = new JwtSecurityTokenHandler();
+				var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+					StringComparison.InvariantCultureIgnoreCase);
 
-				var tokenInVerification =
-					jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParameters, out var validatedToken);
+				if (result is false)
+					return null;
+			}
 
-				if (validatedToken is JwtSecurityToken jwtSecurityToken)
+			var utcExpiryDate = long.Parse(tokenInVerification.Claims.
+				FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp)!.Value);
+
+			var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
+
+			if (expiryDate > DateTime.Now)
+				return new AuthResult()
 				{
-					var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
-						StringComparison.InvariantCultureIgnoreCase);
-
-					if (result is false)
-						return null;
-				}
-
-				var utcExpiryDate = long.Parse(tokenInVerification.Claims.
-					FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp)!.Value);
-
-				var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
-
-				if (expiryDate > DateTime.Now)
-					return new AuthResult()
-					{
-						Result = false,
-						Errors = new List<string>()
+					Result = false,
+					Errors = new List<string>()
 					{
 						"Expired token"
 					}
-					};
-
-				var refreshTokens = await _refreshTokenService.GetAsync();
-				var storeToken = refreshTokens!.FirstOrDefault(x => x.Token == tokenRequest.RefreshToken);
-
-				if (storeToken is null)
-					return new AuthResult()
-					{
-						Result = false,
-						Errors = new List<string>()
-					{
-						"Invalid tokens"
-					}
-					};
-
-				if (storeToken.IsUsed || storeToken.IsRevoked)
-					return new AuthResult()
-					{
-						Result = false,
-						Errors = new List<string>()
-					{
-						"Invalid tokens"
-					}
-					};
-
-				var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti)!.Value;
-				if (storeToken.JwtId != jti || storeToken.ExpiryDate < DateTime.UtcNow)
-					return new AuthResult()
-					{
-						Result = false,
-						Errors = new List<string>()
-					{
-						"Invalid tokens"
-					}
-					};
-
-				var dbUser = await _userManager.FindByIdAsync(storeToken.UserId!);
-
-				var token = GenerateJwtToken(dbUser);
-				var jwtToken = jwtTokenHandler.WriteToken(token);
-
-				return new AuthResult()
-				{
-					Result = true,
-					Token = jwtToken,
-					RefreshToken = tokenRequest.RefreshToken
 				};
-			}
-			catch(SecurityTokenValidationException ex)
-			{
-				Console.WriteLine(ex.ToString());
+
+			var refreshTokens = await _refreshTokenService.GetAsync();
+			var storeToken = refreshTokens!.FirstOrDefault(x => x.Token == tokenRequest.RefreshToken);
+
+			if (storeToken is null)
 				return new AuthResult()
 				{
 					Result = false,
@@ -168,9 +121,42 @@ namespace Identity.Infrastructure.Services
 						"Invalid tokens"
 					}
 				};
-			}
-			
+
+			if (storeToken.IsUsed || storeToken.IsRevoked)
+				return new AuthResult()
+				{
+					Result = false,
+					Errors = new List<string>()
+					{
+						"Invalid tokens"
+					}
+				};
+
+			var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti)!.Value;
+			if (storeToken.JwtId != jti || storeToken.ExpiryDate < DateTime.UtcNow)
+				return new AuthResult()
+				{
+					Result = false,
+					Errors = new List<string>()
+					{
+						"Invalid tokens"
+					}
+				};
+
+			var dbUser = await _userManager.FindByIdAsync(storeToken.UserId!);
+
+			var token = GenerateJwtToken(dbUser);
+			var jwtToken = jwtTokenHandler.WriteToken(token);
+
+			return new AuthResult()
+			{
+				Result = true,
+				Token = jwtToken,
+				RefreshToken = tokenRequest.RefreshToken
+			};
 		}
+
+	
 
 		public async Task<AuthResult> GenerateToken(User user)
 		{

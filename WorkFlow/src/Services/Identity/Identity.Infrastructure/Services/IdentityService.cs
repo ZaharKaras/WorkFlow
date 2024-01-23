@@ -5,7 +5,6 @@ using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using System.Globalization;
 
 namespace Identity.Infrastructure.Services
 {
@@ -66,7 +65,14 @@ namespace Identity.Infrastructure.Services
 			var storeToken = refreshTokens!.FirstOrDefault(x => x.Token == tokenRequest.RefreshToken);
 
 			if (storeToken is null)
-				return null;
+				return new AuthResult()
+				{
+					Result = false,
+					Errors = new List<string>()
+					{
+						"Refresh token doesn't exist"
+					}
+				};
 
 			storeToken.IsRevoked = true;
 			await _refreshTokenService.UpdateAsync(storeToken.Id!, storeToken);
