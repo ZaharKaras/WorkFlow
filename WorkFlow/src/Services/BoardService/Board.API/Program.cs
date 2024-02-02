@@ -1,6 +1,7 @@
 using Board.Infrastructure;
 using Board.Application;
 using Microsoft.EntityFrameworkCore;
+using Board.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

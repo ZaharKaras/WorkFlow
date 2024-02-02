@@ -9,7 +9,7 @@ services:
     image: ${DOCKER_REGISTRY-}boardapi
     build:
       context: .
-      dockerfile: Board.API\Dockerfile
+      dockerfile: src/Services/BoardService/Board.API/Dockerfile
     depends_on:
       - "app_db"
     ports:

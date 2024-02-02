@@ -11,13 +11,13 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Board.API/Board.API.csproj", "Board.API/"]
-COPY ["Board.Application/Board.Application.csproj", "Board.Application/"]
-COPY ["Board.Core/Board.Core.csproj", "Board.Core/"]
-COPY ["Board.Infastructure/Board.Infrastructure.csproj", "Board.Infastructure/"]
-RUN dotnet restore "./Board.API/./Board.API.csproj"
+COPY ["src/Services/BoardService/Board.API/Board.API.csproj", "src/Services/BoardService/Board.API/"]
+COPY ["src/Services/BoardService/Board.Application/Board.Application.csproj", "src/Services/BoardService/Board.Application/"]
+COPY ["src/Services/BoardService/Board.Core/Board.Core.csproj", "src/Services/BoardService/Board.Core/"]
+COPY ["src/Services/BoardService/Board.Infastructure/Board.Infrastructure.csproj", "src/Services/BoardService/Board.Infastructure/"]
+RUN dotnet restore "./src/Services/BoardService/Board.API/./Board.API.csproj"
 COPY . .
-WORKDIR "/src/Board.API"
+WORKDIR "/src/src/Services/BoardService/Board.API"
 RUN dotnet build "./Board.API.csproj" -c %BUILD_CONFIGURATION% -o /app/build
 
 FROM build AS publish
