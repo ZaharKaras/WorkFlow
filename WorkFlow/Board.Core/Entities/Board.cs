@@ -13,22 +13,12 @@ namespace Board.Core.Entities
 
 		public string Name { get; private set; } = string.Empty;
 		public Guid OwnerId { get; private set; }
-		public List<Guid> MembersId { get; private set; } = new();
+		public List<BoardUser> BoardUsers { get; set; } = new List<BoardUser>();
 
 		public void Update(string name, Guid ownerId)
 		{
 			Name = name;
 			OwnerId = ownerId;
-		}
-
-		public void AddMemberId(Guid userId)
-		{
-			MembersId.Add(userId);
-		}
-
-		public void RemoveMemberId(Guid userId)
-		{
-			MembersId.Remove(userId);
 		}
 	}
 }
