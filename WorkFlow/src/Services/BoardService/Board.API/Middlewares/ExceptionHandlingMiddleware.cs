@@ -1,4 +1,5 @@
-﻿using Board.Core.Exceptions.Boards;
+﻿using Board.Core.Exceptions;
+using Board.Core.Exceptions.Boards;
 using Board.Core.Exceptions.Cards;
 
 namespace Board.API.Middlewares
@@ -21,29 +22,11 @@ namespace Board.API.Middlewares
 				await _next(context);
 			}
 
-			catch (BoardNotFoundException ex)
+			catch (CustomException ex)
 			{
-				_logger.LogError("Board not found");
-				context.Response.StatusCode = StatusCodes.Status404NotFound;
-				await context.Response.WriteAsync("Board not found");
-			}
-			catch (MemberAlreadyExists ex)
-			{
-				_logger.LogError("Member already exists");
-				context.Response.StatusCode = StatusCodes.Status409Conflict;
-				await context.Response.WriteAsync("Member already exists");
-			}
-			catch (CardNotFoundException ex)
-			{
-				_logger.LogError("Card not found");
-				context.Response.StatusCode = StatusCodes.Status404NotFound;
-				await context.Response.WriteAsync("Card not found");
-			}
-			catch (AssigneeAlreadyExists ex)
-			{
-				_logger.LogError("Assignee already exists");
-				context.Response.StatusCode = StatusCodes.Status409Conflict;
-				await context.Response.WriteAsync("Assignee already exists");
+				_logger.LogError(ex.Message);
+				context.Response.StatusCode = ex.StatusCode;
+				await context.Response.WriteAsync(ex.Message);
 			}
 			catch (Exception ex)
 			{
