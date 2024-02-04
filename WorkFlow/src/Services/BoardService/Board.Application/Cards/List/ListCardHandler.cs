@@ -1,4 +1,5 @@
-﻿using Board.Application.Cards.DTOs;
+﻿using AutoMapper;
+using Board.Application.Cards.DTOs;
 using Board.Core.Interfaces;
 using MediatR;
 
@@ -7,20 +8,19 @@ namespace Board.Application.Cards.List
     public class ListCardHandler : IRequestHandler<ListCardQuery, IEnumerable<CardListDTO>>
 	{
 		private readonly ICardRepository _cardRepository;
+		private readonly IMapper _mapper;
 
-		public ListCardHandler(ICardRepository cardRepository)
+		public ListCardHandler(ICardRepository cardRepository, IMapper mapper)
 		{
 			_cardRepository = cardRepository;
+			_mapper = mapper;
 		}
 
 		public async Task<IEnumerable<CardListDTO>> Handle(ListCardQuery request, CancellationToken cancellationToken)
 		{
 			var cards = await _cardRepository.GetByBoardIdAsync(request.boardId);
 
-			var cardDTOs = cards.Select(card => new CardListDTO(
-				card.Id,
-				card.Title
-			));
+			var cardDTOs = cards.Select(card => _mapper.Map<CardListDTO>(card));
 
 			return cardDTOs;
 		}

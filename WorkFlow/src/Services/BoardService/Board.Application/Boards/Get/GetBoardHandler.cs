@@ -1,4 +1,5 @@
-﻿using Board.Application.Boards.DTOs;
+﻿using AutoMapper;
+using Board.Application.Boards.DTOs;
 using Board.Core.Exceptions.Boards;
 using Board.Core.Interfaces;
 using MediatR;
@@ -8,10 +9,12 @@ namespace Board.Application.Boards.Get
     public class GetBoardHandler : IRequestHandler<GetBoardQuery, BoardDTO>
 	{
 		private readonly IBoardRepository _boardRepository;
+		private readonly IMapper _mapper;
 
-		public GetBoardHandler(IBoardRepository boardRepository)
+		public GetBoardHandler(IBoardRepository boardRepository, IMapper mapper)
 		{
 			_boardRepository = boardRepository;
+			_mapper = mapper;
 		}
 
 		public async Task<BoardDTO> Handle(GetBoardQuery request, CancellationToken cancellationToken)
@@ -21,11 +24,7 @@ namespace Board.Application.Boards.Get
 			if (board == null)
 				throw new BoardNotFoundException(request.boardId);
 
-			return new BoardDTO(
-				board.Id,
-				board.Name,
-				board.OwnerId
-			);
+			return _mapper.Map<BoardDTO>(board);
 		}
 	}
 }

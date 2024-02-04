@@ -1,4 +1,5 @@
-﻿using Board.Application.Boards;
+﻿using AutoMapper;
+using Board.Application.Boards;
 using Board.Application.Cards.DTOs;
 using Board.Core.Exceptions.Cards;
 using Board.Core.Interfaces;
@@ -9,10 +10,12 @@ namespace Board.Application.Cards.Get
     public class GetCardHandler : IRequestHandler<GetCardQuery, CardDTO>
 	{
 		private readonly ICardRepository _cardRepository;
+		private readonly IMapper _mapper;
 
-		public GetCardHandler(ICardRepository cardRepository)
+		public GetCardHandler(ICardRepository cardRepository, IMapper mapper)
 		{
 			_cardRepository = cardRepository;
+			_mapper = mapper;
 		}
 
 		public async Task<CardDTO> Handle(GetCardQuery request, CancellationToken cancellationToken)
@@ -22,15 +25,7 @@ namespace Board.Application.Cards.Get
 			if (card == null)
 				throw new CardNotFoundException(request.cardId);
 
-			return new CardDTO(
-				card.Id,
-				card.Title,
-				card.Description,
-				card.BoardId,
-				card.Status,
-				card.DeadLine,
-				card.AddedDate
-			);
+			return _mapper.Map<CardDTO>(card);
 		}
 	}
 }
