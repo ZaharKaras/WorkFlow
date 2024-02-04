@@ -21,6 +21,7 @@ namespace Board.Application.Cards.Create
 			var card = _mapper.Map<Card>(request);
 
 			await _cardRepository.AddAsync(card, cancellationToken);
+			await _cardRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

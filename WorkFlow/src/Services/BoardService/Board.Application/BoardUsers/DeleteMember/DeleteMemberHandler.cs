@@ -21,6 +21,7 @@ namespace Board.Application.BoardUsers.DeleteMember
 				throw new BoardNotFoundException(request.boardId);
 
 			await _boardUserRepository.DeleteAsync(boardUser.Id, cancellationToken);
+			await _boardUserRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

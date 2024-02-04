@@ -22,6 +22,7 @@ namespace Board.Application.BoardUsers.AddMember
 			var boardUser = _mapper.Map<BoardUser>(request);
 
 			await _boardUserRepository.AddAsync(boardUser, cancellationToken);
+			await _boardUserRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

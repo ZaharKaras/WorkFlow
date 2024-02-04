@@ -6,5 +6,6 @@
 		Task AddAsync(T entity, CancellationToken token = default);
 		Task UpdateAsync(T entity, CancellationToken token = default);
 		Task DeleteAsync(Guid id, CancellationToken token = default);
+		Task SaveChangesAsync(CancellationToken token = default);
 	}
 }

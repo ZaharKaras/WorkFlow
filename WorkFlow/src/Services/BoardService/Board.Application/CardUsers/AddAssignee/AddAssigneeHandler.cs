@@ -21,6 +21,7 @@ namespace Board.Application.CardUsers.AddAssignee
 			var cardUser = _mapper.Map<CardUser>(request);
 
 			await _cardUserRepository.AddAsync(cardUser, cancellationToken);
+			await _cardUserRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

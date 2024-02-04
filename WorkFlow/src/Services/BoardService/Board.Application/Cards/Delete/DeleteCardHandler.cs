@@ -21,6 +21,7 @@ namespace Board.Application.Cards.Delete
 				throw new CardNotFoundException(request.cardId);
 
 			await _cardRepository.DeleteAsync(request.cardId, cancellationToken);
+			await _cardRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

@@ -21,6 +21,7 @@ namespace Board.Application.Boards.Delete
 				throw new BoardNotFoundException(request.boardId);
 
 			await _boardRepository.DeleteAsync(request.boardId, cancellationToken);
+			await _boardRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

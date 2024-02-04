@@ -21,6 +21,7 @@ namespace Board.Application.CardUsers.RemoveAssignee
 				throw new CardNotFoundException(request.cardId);
 
 			await _cardUserRepository.DeleteAsync(cardUser.Id, cancellationToken);
+			await _cardUserRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
 }

@@ -29,6 +29,7 @@ namespace Board.Application.Boards.Create
 
 			await _boardRepository.AddAsync(board, cancellationToken);
 			await _boardUserRepository.AddAsync(boardUser, cancellationToken);
+			await _boardRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
 }
