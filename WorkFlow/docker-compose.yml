@@ -20,6 +20,7 @@ services:
       - dev
     links:
       - "redis" 
+
   mongodb:
     image: mongo:latest
     ports:
@@ -28,6 +29,7 @@ services:
       - mongodb-data:/data
     networks:
       - dev
+
   redis:
     container_name: redis
     image: redis:latest
@@ -42,4 +44,3 @@ services:
 volumes:
   mongodb-data:
   redis-data:
-  #mongodb://root:rootpassword@localhost:27017
