@@ -2,9 +2,6 @@ using Identity.API.Extensions;
 using Identity.API.Middlewares;
 using Identity.Infrastructure.Services;
 using Identity.Infrastructure.Services.Interfaces;
-using Microsoft.OpenApi.Models;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +11,7 @@ var config = builder.Configuration;
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddMongoDb(builder.Configuration);
 builder.Services.AddJwtToken(builder.Configuration);

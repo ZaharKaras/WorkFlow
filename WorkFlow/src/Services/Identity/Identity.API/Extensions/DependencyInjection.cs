@@ -76,5 +76,12 @@ namespace Identity.API.Extensions
 
 			return services;
 		}
+
+		public static IServiceCollection AddMapper(this IServiceCollection services)
+		{
+			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+			return services;
+		}
 	}
 }

@@ -19,32 +19,28 @@ namespace Identity.API.Controllers
 		[Route("register")]
 		public async Task<IActionResult> Register([FromBody] RegistrationRequest registerRequest)
 		{
-			var result = await _identityService.Register(registerRequest);
-			return Ok(result);
+			return Ok(await _identityService.Register(registerRequest));
 		}
 
 		[HttpPost]
 		[Route("login")]
 		public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
 		{
-			var result = await _identityService.Login(loginRequest);
-			return Ok(result);
+			return Ok(await _identityService.Login(loginRequest));
 		}
 
 		[HttpPost]
 		[Route("logout")]
 		public async Task<IActionResult> Logout([FromBody] TokenRequest tokenRequest)
 		{
-			var result = await _identityService.Logout(tokenRequest);
-			return Ok(result);
+			return Ok(await _identityService.Logout(tokenRequest));
 		}
 
 		[HttpPost]
 		[Route("refresh-token")]
 		public async Task<IActionResult> RefreshToken([FromBody] TokenRequest tokenRequest)
 		{
-			var result = await _identityService.RefreshToken(tokenRequest);
-			return Ok(result);
+			return Ok(await _identityService.RefreshToken(tokenRequest));
 		}
 
 
