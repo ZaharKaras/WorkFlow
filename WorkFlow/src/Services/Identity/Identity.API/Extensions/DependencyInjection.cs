@@ -9,6 +9,7 @@ using AspNetCore.Identity.MongoDbCore.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Identity.Infrastructure.Settings;
 
 namespace Identity.API.Extensions
 {
@@ -71,7 +72,7 @@ namespace Identity.API.Extensions
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer();
 
-			services.ConfigureOptions<JwtConfig>();
+			services.Configure<JwtSettings>(config.GetSection("JwtSettings"));
 			services.ConfigureOptions<JwtBearerConfig>();
 
 			return services;

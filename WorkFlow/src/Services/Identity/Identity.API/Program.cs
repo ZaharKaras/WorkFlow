@@ -15,6 +15,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddMongoDb(builder.Configuration);
 builder.Services.AddJwtToken(builder.Configuration);
+builder.Services.AddMapper();
 
 builder.Services.AddAuthorization();
 
