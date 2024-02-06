@@ -1,4 +1,6 @@
-﻿namespace Identity.Infrastructure.Services.Interfaces
+﻿using Microsoft.Extensions.Caching.Distributed;
+
+namespace Identity.Infrastructure.Services.Interfaces
 {
 	public interface ICacheService
 	{

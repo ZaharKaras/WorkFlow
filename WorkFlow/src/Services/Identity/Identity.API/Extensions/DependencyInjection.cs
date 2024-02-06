@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Identity.Infrastructure.Settings;
+using Identity.Infrastructure.Services.Interfaces;
+using Identity.Infrastructure.Services;
 
 namespace Identity.API.Extensions
 {
@@ -81,6 +83,16 @@ namespace Identity.API.Extensions
 		public static IServiceCollection AddMapper(this IServiceCollection services)
 		{
 			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+			return services;
+		}
+
+		public static IServiceCollection AddServices(this IServiceCollection services)
+		{
+			services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+			services.AddScoped<ITokenService, TokenService>();
+			services.AddScoped<IIdentityService, IdentityService>();
+			services.AddScoped<IUserService, UserService>();
 
 			return services;
 		}

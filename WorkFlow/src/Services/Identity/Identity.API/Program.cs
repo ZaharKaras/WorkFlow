@@ -8,11 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 // Add services to the container.
 
-builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IIdentityService, IdentityService>();
-builder.Services.AddScoped<IUserService, UserService>();
-
+builder.Services.AddServices();
 builder.Services.AddMongoDb(builder.Configuration);
 builder.Services.AddJwtToken(builder.Configuration);
 builder.Services.AddMapper();
