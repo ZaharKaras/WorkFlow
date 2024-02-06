@@ -1,6 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace Identity.API.Middlewares
+﻿namespace Identity.API.Middlewares
 {
 	public class CustomExceptionMiddleware
 	{
@@ -12,6 +10,7 @@ namespace Identity.API.Middlewares
 			_next = next;
 			_logger = logger;
 		}
+
 		public async Task InvokeAsync(HttpContext context)
 		{
 			try

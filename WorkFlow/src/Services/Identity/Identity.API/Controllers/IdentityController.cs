@@ -42,7 +42,5 @@ namespace Identity.API.Controllers
 		{
 			return Ok(await _identityService.RefreshToken(tokenRequest));
 		}
-
-
 	}
 }

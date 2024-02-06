@@ -26,6 +26,7 @@ namespace Identity.Infrastructure.Services
 			_tokenService = tokenService;
 			_logger = logger;
 		}
+
 		public async Task<AuthResult> Login(LoginRequest loginRequest)
 		{
 			var existingUser = await _userManager.FindByEmailAsync(loginRequest.Email);

@@ -3,12 +3,6 @@ using Identity.Infrastructure.Data;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Identity.Infrastructure.Services
 {
@@ -32,7 +26,6 @@ namespace Identity.Infrastructure.Services
 			_cacheService = cacheService;
 		}
 
-
 		public async Task<List<RefreshToken>?> GetAsync()
 		{
 			var cacheData = await _cacheService.GetData<List<RefreshToken>>("RefreshTokens");
@@ -47,8 +40,10 @@ namespace Identity.Infrastructure.Services
 			return data;
 		}
 
-		public async Task<RefreshToken?> GetAsync(string id) =>
-			await _tokensCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+		public async Task<RefreshToken?> GetAsync(string id)
+		{
+			return await _tokensCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+		}
 
 		public async Task CreateAsync(RefreshToken token)
 		{
@@ -57,8 +52,10 @@ namespace Identity.Infrastructure.Services
 			await _tokensCollection.InsertOneAsync(token);
 		}
 
-		public async Task UpdateAsync(string id, RefreshToken updatedBook) =>
+		public async Task UpdateAsync(string id, RefreshToken updatedBook)
+		{
 			await _tokensCollection.ReplaceOneAsync(x => x.Id == id, updatedBook);
+		}
 
 		public async Task DeleteAsync(string id)
 		{

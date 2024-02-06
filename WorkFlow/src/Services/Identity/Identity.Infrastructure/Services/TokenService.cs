@@ -35,7 +35,6 @@ namespace Identity.Infrastructure.Services
 			_tokenValidationParameters = tokenValidationParameters;
 		}
 
-
 		private SecurityToken GenerateJwtToken(User user)
 		{
 			var jwtTokenHandler = new JwtSecurityTokenHandler();

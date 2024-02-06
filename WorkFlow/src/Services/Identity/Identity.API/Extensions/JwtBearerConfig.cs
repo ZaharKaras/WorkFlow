@@ -9,6 +9,7 @@ namespace Identity.API.Extensions
 	public class JwtBearerConfig : IConfigureOptions<JwtBearerOptions>
 	{
 		private readonly JwtSettings _jwtSettings;
+
 		public JwtBearerConfig(IOptions<JwtSettings> jwtSettings)
 		{
 			_jwtSettings = jwtSettings.Value;
