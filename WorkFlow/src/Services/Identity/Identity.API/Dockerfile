@@ -2,6 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
+ENV ASPNETCORE_ENVIRONMENT Docker
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081

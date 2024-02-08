@@ -155,8 +155,6 @@ namespace Identity.Infrastructure.Services
 			};
 		}
 
-	
-
 		public async Task<AuthResult> GenerateToken(User user)
 		{
 			var jwtTokenHandler = new JwtSecurityTokenHandler();

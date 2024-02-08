@@ -6,6 +6,7 @@ networks:
 
 services:
   identity.api:
+    container_name: identity.api
     image: ${DOCKER_REGISTRY-}identityapi
     build:
       context: .
@@ -22,6 +23,7 @@ services:
       - "redis" 
 
   mongodb:
+    container_name: identity.db
     image: mongo:latest
     ports:
       - 27017:27017
