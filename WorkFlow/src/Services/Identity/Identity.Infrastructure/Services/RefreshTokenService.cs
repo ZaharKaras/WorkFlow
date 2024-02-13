@@ -1,19 +1,21 @@
 ﻿using Identity.Core.Entities;
 using Identity.Infrastructure.Data;
 using Identity.Infrastructure.Services.Interfaces;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace Identity.Infrastructure.Services
 {
 	public class RefreshTokenService : IRefreshTokenService
 	{
 		private readonly IMongoCollection<RefreshToken> _tokensCollection;
-		private readonly ICacheService _cacheService;
+		private readonly IDistributedCache _cache;
 
 		public RefreshTokenService(
 			IOptions<DataBaseSettings> tokenStoreDatabaseSettings,
-			ICacheService cacheService)
+			IDistributedCache cache)
 		{
 			var mongoClient = new MongoClient(
 				tokenStoreDatabaseSettings.Value.ConnectionString);
@@ -23,45 +25,43 @@ namespace Identity.Infrastructure.Services
 
 			_tokensCollection = mongoDatabase.GetCollection<RefreshToken>(
 				tokenStoreDatabaseSettings.Value.CollectionName);
-			_cacheService = cacheService;
+
+			_cache = cache;
 		}
 
-		public async Task<List<RefreshToken>?> GetAsync()
+		public async Task<RefreshToken?> GetByValueAsync(string value)
 		{
-			var cacheData = await _cacheService.GetData<List<RefreshToken>>("RefreshTokens");
+			string key = $"RefreshToken-{value}";
 
-			if (cacheData != null && cacheData.Count() != 0)
-				return cacheData;
+			string? cachedToken = await _cache.GetStringAsync(key);
 
-			var data = await _tokensCollection.Find(_ => true).ToListAsync();
+			if (string.IsNullOrEmpty(cachedToken))
+			{
+				var token = await _tokensCollection.Find(x => x.Token == value).FirstOrDefaultAsync();
 
-			await _cacheService.SetData("RefreshTokens", data);
+				await _cache.SetStringAsync(key, JsonConvert.SerializeObject(token));
 
-			return data;
-		}
+				return token;
+			}
 
-		public async Task<RefreshToken?> GetAsync(string id)
-		{
-			return await _tokensCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+			return JsonConvert.DeserializeObject<RefreshToken>(cachedToken);
 		}
 
 		public async Task CreateAsync(RefreshToken token)
 		{
-			await _cacheService.SetData($"RefreshToken{token.Id}", token);
-
 			await _tokensCollection.InsertOneAsync(token);
 		}
 
-		public async Task UpdateAsync(string id, RefreshToken updatedBook)
+		public async Task UpdateAsync(string id, RefreshToken updatedToken)
 		{
-			await _tokensCollection.ReplaceOneAsync(x => x.Id == id, updatedBook);
+			await _tokensCollection.ReplaceOneAsync(x => x.Id == id, updatedToken);
 		}
 
-		public async Task DeleteAsync(string id)
+		public async Task DeleteAsync(string value)
 		{
-			await _cacheService.RemoveData($"RefreshToken{id}");
+			await _cache.RemoveAsync($"RefreshToken-{value}");
 
-			await _tokensCollection.DeleteOneAsync(x => x.Id == id);
+			await _tokensCollection.DeleteOneAsync(x => x.Token == value);
 		}
 	}
 }

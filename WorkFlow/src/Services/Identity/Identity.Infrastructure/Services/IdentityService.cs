@@ -54,16 +54,14 @@ namespace Identity.Infrastructure.Services
 
 		public async Task<Result<bool, Error>> LogoutAsync(TokenRequest tokenRequest)
 		{
-			var refreshTokens = await _refreshTokenService.GetAsync();
-			var storeToken = refreshTokens!.FirstOrDefault(x => x.Token == tokenRequest.RefreshToken);
+			var storeToken = await _refreshTokenService.GetByValueAsync(tokenRequest.Token);
 
 			if (storeToken is null)
 			{
 				return TokenErrors.RefreshTokenNotFound;
 			}
 
-			storeToken.IsRevoked = true;
-			await _refreshTokenService.UpdateAsync(storeToken.Id!, storeToken);
+			await _refreshTokenService.DeleteAsync(tokenRequest.Token);
 
 			_logger.LogInformation("Token is updated");
 

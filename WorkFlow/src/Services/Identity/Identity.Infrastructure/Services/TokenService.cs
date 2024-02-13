@@ -101,8 +101,7 @@ namespace Identity.Infrastructure.Services
 				return TokenErrors.ExpiredToken;
 			}
 
-			var refreshTokens = await _refreshTokenService.GetAsync();
-			var storeToken = refreshTokens!.FirstOrDefault(x => x.Token == tokenRequest.RefreshToken);
+			var storeToken = await _refreshTokenService.GetByValueAsync(tokenRequest.Token);
 
 			if (storeToken is null || storeToken.IsUsed || storeToken.IsRevoked)
 			{

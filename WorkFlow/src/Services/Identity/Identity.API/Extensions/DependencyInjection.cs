@@ -107,7 +107,18 @@ namespace Identity.API.Extensions
 			services.AddScoped<ITokenService, TokenService>();
 			services.AddScoped<IIdentityService, IdentityService>();
 			services.AddScoped<IUserService, UserService>();
-			services.AddScoped<ICacheService, CacheService>();
+
+			return services;
+		}
+
+		public static IServiceCollection AddCache(this IServiceCollection services, IConfiguration config)
+		{
+			services.AddStackExchangeRedisCache(redisOptions =>
+			{
+				string connection = config.GetSection("Redis:ConnectionString").Value!;
+
+				redisOptions.Configuration = connection;
+			});
 
 			return services;
 		}
