@@ -2,7 +2,6 @@
 using Identity.Core.Abstractions;
 using Identity.Core.Entities;
 using Identity.Core.Errors;
-using Identity.Core.Models;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -33,49 +32,7 @@ namespace Identity.Infrastructure.Services
 			_tokenValidationParameters = tokenValidationParameters;
 		}
 
-		private SecurityToken GenerateJwtToken(User user)
-		{
-			var jwtTokenHandler = new JwtSecurityTokenHandler();
-
-			var key = Encoding.UTF8.GetBytes(_config.GetSection("JwtSettings:Key").Value!);
-
-			var tokenDescriptor = new SecurityTokenDescriptor()
-			{
-				Subject = new ClaimsIdentity(new[]
-				{
-					new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-					new Claim(JwtRegisteredClaimNames.Sub, user.Email!),
-					new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-					new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-					new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString())
-				}),
-
-				Expires = DateTime.UtcNow.Add(TimeSpan.Parse(_config.GetSection("JwtSettings:ExpiryTimeFrame").Value!)),
-				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-			};
-
-			 return jwtTokenHandler.CreateToken(tokenDescriptor);
-		}
-
-		private string RandomStringGeneration(int lenght)
-		{
-			var randomNumber = new byte[lenght];
-
-			using var generator = RandomNumberGenerator.Create();
-			generator.GetBytes(randomNumber);
-
-			return Convert.ToBase64String(randomNumber);
-		}
-
-		private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
-		{
-			var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-			dateTimeVal = dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
-
-			return dateTimeVal;
-		}
-
-		public async Task<Result<AuthResult, Error>?> VerifyAndGenerateTokenAsync(TokenRequest tokenRequest)
+		public async Task<Result<TokenResponse, Error>?> VerifyAndGenerateTokenAsync(TokenRequest tokenRequest)
 		{
 			var jwtTokenHandler = new JwtSecurityTokenHandler();
 
@@ -88,7 +45,9 @@ namespace Identity.Infrastructure.Services
 					StringComparison.InvariantCultureIgnoreCase);
 
 				if (result is false)
+				{
 					return null;
+				}
 			}
 
 			var utcExpiryDate = long.Parse(tokenInVerification.Claims.
@@ -125,14 +84,14 @@ namespace Identity.Infrastructure.Services
 			var token = GenerateJwtToken(dbUser);
 			var jwtToken = jwtTokenHandler.WriteToken(token);
 
-			return new AuthResult()
+			return new TokenResponse()
 			{
 				Token = jwtToken,
 				RefreshToken = tokenRequest.RefreshToken
 			};
 		}
 
-		public async Task<Result<AuthResult, Error>> GenerateTokenAsync(User user)
+		public async Task<Result<TokenResponse, Error>> GenerateTokenAsync(User user)
 		{
 			var jwtTokenHandler = new JwtSecurityTokenHandler();
 
@@ -152,11 +111,53 @@ namespace Identity.Infrastructure.Services
 
 			await _refreshTokenService.CreateAsync(refreshToken);
 
-			return new AuthResult()
+			return new TokenResponse()
 			{
 				RefreshToken = refreshToken.Token,
 				Token = jwtToken
 			};
+		}
+
+		private SecurityToken GenerateJwtToken(User user)
+		{
+			var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+			var key = Encoding.UTF8.GetBytes(_config.GetSection("JwtSettings:Key").Value!);
+
+			var tokenDescriptor = new SecurityTokenDescriptor()
+			{
+				Subject = new ClaimsIdentity(new[]
+				{
+					new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+					new Claim(JwtRegisteredClaimNames.Sub, user.Email!),
+					new Claim(JwtRegisteredClaimNames.Email, user.Email!),
+					new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+					new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString())
+				}),
+
+				Expires = DateTime.UtcNow.Add(TimeSpan.Parse(_config.GetSection("JwtSettings:ExpiryTimeFrame").Value!)),
+				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+			};
+
+			return jwtTokenHandler.CreateToken(tokenDescriptor);
+		}
+
+		private string RandomStringGeneration(int lenght)
+		{
+			var randomNumber = new byte[lenght];
+
+			using var generator = RandomNumberGenerator.Create();
+			generator.GetBytes(randomNumber);
+
+			return Convert.ToBase64String(randomNumber);
+		}
+
+		private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+		{
+			var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+			dateTimeVal = dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
+
+			return dateTimeVal;
 		}
 	}
 }

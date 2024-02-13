@@ -15,12 +15,10 @@ namespace Identity.Infrastructure.Services
 
 		public RefreshTokenService(
 			IOptions<DataBaseSettings> tokenStoreDatabaseSettings,
-			IDistributedCache cache)
+			IDistributedCache cache,
+			IMongoClient client)
 		{
-			var mongoClient = new MongoClient(
-				tokenStoreDatabaseSettings.Value.ConnectionString);
-
-			var mongoDatabase = mongoClient.GetDatabase(
+			var mongoDatabase = client.GetDatabase(
 				tokenStoreDatabaseSettings.Value.DataBaseName);
 
 			_tokensCollection = mongoDatabase.GetCollection<RefreshToken>(
@@ -39,12 +37,15 @@ namespace Identity.Infrastructure.Services
 			{
 				var token = await _tokensCollection.Find(x => x.Token == value).FirstOrDefaultAsync();
 
-				await _cache.SetStringAsync(key, JsonConvert.SerializeObject(token));
+                if (token != null)
+                {
+					await _cache.SetStringAsync(key, JsonConvert.SerializeObject(token));
+				}
 
 				return token;
 			}
 
-			return JsonConvert.DeserializeObject<RefreshToken>(cachedToken);
+			return JsonConvert.DeserializeObject<RefreshToken>(cachedToken)!;
 		}
 
 		public async Task CreateAsync(RefreshToken token)

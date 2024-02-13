@@ -14,6 +14,7 @@ using Identity.Infrastructure.Services.Interfaces;
 using Identity.Infrastructure.Services;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using MongoDB.Driver;
 
 namespace Identity.API.Extensions
 {
@@ -55,6 +56,10 @@ namespace Identity.API.Extensions
 			services.ConfigureMongoDbIdentity<User, MongoIdentityRole<Guid>, Guid>(mongoDbIdentityConfig)
 				.AddUserManager<UserManager<User>>()
 				.AddDefaultTokenProviders();
+
+			services.AddSingleton<IMongoClient>(s =>
+				new MongoClient(config["MongoDataBase:ConnectionString"])
+			);
 
 			return services;
 		}

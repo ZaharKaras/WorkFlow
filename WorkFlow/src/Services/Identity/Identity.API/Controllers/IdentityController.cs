@@ -1,7 +1,5 @@
 ﻿using Identity.API.DTOs;
-using Identity.Core.Models;
 using Identity.Infrastructure.Services.Interfaces;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using LoginRequest = Identity.API.DTOs.LoginRequest;
 
@@ -25,7 +23,7 @@ namespace Identity.API.Controllers
 			var result = await _identityService.RegisterAsync(registerRequest);
 
 			return result.Match<IActionResult>(
-				m => Ok(new AuthResult() { Token = m.Token, RefreshToken = m.RefreshToken }),
+				m => Ok(new TokenResponse() { Token = m.Token, RefreshToken = m.RefreshToken }),
 				err => BadRequest(err));
 		}
 
@@ -36,7 +34,7 @@ namespace Identity.API.Controllers
 			var result = await _identityService.LoginAsync(loginRequest);
 
 			return result.Match<IActionResult>(
-				m => Ok(new AuthResult() { Token = m.Token, RefreshToken = m.RefreshToken }),
+				m => Ok(new TokenResponse() { Token = m.Token, RefreshToken = m.RefreshToken }),
 				err => BadRequest(err));
 		}
 
@@ -58,7 +56,7 @@ namespace Identity.API.Controllers
 			var result = await _identityService.RefreshTokenAsync(tokenRequest);
 
 			return result!.Match<IActionResult>(
-				m => Ok(new AuthResult() { Token = m.Token, RefreshToken = m.RefreshToken }),
+				m => Ok(new TokenResponse() { Token = m.Token, RefreshToken = m.RefreshToken }),
 				err => BadRequest(err));
 		}
 	}

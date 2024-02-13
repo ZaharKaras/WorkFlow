@@ -13,5 +13,9 @@ namespace Identity.Core.Errors
 
 		public static readonly Error InvalidTokens = new Error(
 			"Tokens.InvalidTokens", "Invalid tokens");
+
+		public static readonly Error TokenNotFound = new Error(
+			"RefreshTokens.TokenNotFound",
+			"Token does not exist");
 	}
 }

@@ -6,7 +6,6 @@ using Identity.Infrastructure.DTOs;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson.IO;
 using System.Security.Claims;
 
 namespace Identity.Infrastructure.Services

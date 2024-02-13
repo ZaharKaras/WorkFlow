@@ -2,11 +2,9 @@
 using Identity.Core.Abstractions;
 using Identity.Core.Entities;
 using Identity.Core.Errors;
-using Identity.Core.Models;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
 
 namespace Identity.Infrastructure.Services
 {
@@ -29,7 +27,7 @@ namespace Identity.Infrastructure.Services
 			_logger = logger;
 		}
 
-		public async Task<Result<AuthResult, Error>> LoginAsync(LoginRequest loginRequest)
+		public async Task<Result<TokenResponse, Error>> LoginAsync(LoginRequest loginRequest)
 		{
 			var existingUser = await _userManager.FindByEmailAsync(loginRequest.Email);
 
@@ -52,7 +50,7 @@ namespace Identity.Infrastructure.Services
 			return (token);
 		}
 
-		public async Task<Result<bool, Error>> LogoutAsync(TokenRequest tokenRequest)
+		public async Task<Result<bool, Error>?> LogoutAsync(TokenRequest tokenRequest)
 		{
 			var storeToken = await _refreshTokenService.GetByValueAsync(tokenRequest.Token);
 
@@ -68,12 +66,12 @@ namespace Identity.Infrastructure.Services
 			return true;
 		}
 
-		public async Task<Result<AuthResult, Error>> RefreshTokenAsync(TokenRequest tokenRequest)
+		public async Task<Result<TokenResponse, Error>> RefreshTokenAsync(TokenRequest tokenRequest)
 		{
 			return await _tokenService.VerifyAndGenerateTokenAsync(tokenRequest);
 		}
 
-		public async Task<Result<AuthResult, Error>> RegisterAsync(RegistrationRequest registerRequest)
+		public async Task<Result<TokenResponse, Error>> RegisterAsync(RegistrationRequest registerRequest)
 		{
 			var existingUser = await _userManager.FindByEmailAsync(registerRequest.Email);
 			if (existingUser != null)
