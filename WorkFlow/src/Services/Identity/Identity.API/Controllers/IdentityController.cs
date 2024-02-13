@@ -1,6 +1,9 @@
 ﻿using Identity.API.DTOs;
+using Identity.Core.Models;
 using Identity.Infrastructure.Services.Interfaces;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using LoginRequest = Identity.API.DTOs.LoginRequest;
 
 namespace Identity.API.Controllers
 {
@@ -19,28 +22,44 @@ namespace Identity.API.Controllers
 		[Route("register")]
 		public async Task<IActionResult> Register([FromBody] RegistrationRequest registerRequest)
 		{
-			return Ok(await _identityService.Register(registerRequest));
+			var result = await _identityService.RegisterAsync(registerRequest);
+
+			return result.Match<IActionResult>(
+				m => Ok(new AuthResult() { Token = m.Token, RefreshToken = m.RefreshToken }),
+				err => BadRequest(err));
 		}
 
 		[HttpPost]
 		[Route("login")]
 		public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
 		{
-			return Ok(await _identityService.Login(loginRequest));
+			var result = await _identityService.LoginAsync(loginRequest);
+
+			return result.Match<IActionResult>(
+				m => Ok(new AuthResult() { Token = m.Token, RefreshToken = m.RefreshToken }),
+				err => BadRequest(err));
 		}
 
 		[HttpPost]
 		[Route("logout")]
 		public async Task<IActionResult> Logout([FromBody] TokenRequest tokenRequest)
 		{
-			return Ok(await _identityService.Logout(tokenRequest));
+			var result = await _identityService.LogoutAsync(tokenRequest);
+
+			return result!.Match<IActionResult>(
+				m => NoContent(),
+				err => BadRequest(err));
 		}
 
 		[HttpPost]
 		[Route("refresh-token")]
 		public async Task<IActionResult> RefreshToken([FromBody] TokenRequest tokenRequest)
 		{
-			return Ok(await _identityService.RefreshToken(tokenRequest));
+			var result = await _identityService.RefreshTokenAsync(tokenRequest);
+
+			return result!.Match<IActionResult>(
+				m => Ok(new AuthResult() { Token = m.Token, RefreshToken = m.RefreshToken }),
+				err => BadRequest(err));
 		}
 	}
 }

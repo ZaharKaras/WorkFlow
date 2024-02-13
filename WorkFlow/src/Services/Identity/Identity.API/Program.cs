@@ -1,8 +1,11 @@
+using FluentValidation.AspNetCore;
 using Identity.API.Extensions;
 using Identity.API.Middlewares;
 using Identity.Infrastructure.Services;
 using Identity.Infrastructure.Services.Interfaces;
+using Microsoft.OpenApi.Models;
 using Serilog;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -20,10 +23,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Host.UseSerilog((context, configuration) => 
 	configuration.ReadFrom.Configuration(context.Configuration));
+
+builder.Services.AddFluentValidationAutoValidation();
+
+
+
 
 var app = builder.Build();
 
@@ -36,9 +43,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 
-app.UseMiddleware<CustomExceptionMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,11 +1,12 @@
 ﻿using Identity.Infrastructure.DTOs;
 using Identity.Infrastructure.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.API.Controllers
 {
-	[Authorize]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class UserController : ControllerBase
@@ -21,25 +22,33 @@ namespace Identity.API.Controllers
 		[Route("profile")]
 		public async Task<IActionResult> GetCurrentUserProfileAsync()
 		{
-			return Ok(await _userService.GetUserProfileAsync(this.User));
+			var result = await _userService.GetUserProfileAsync(this.User);
+
+			return result.Match<IActionResult>(
+				m => Ok(new UserResponse() { UserName = m.UserName, Email = m.Email}),
+				err => BadRequest(err));
 		}
 
 		[HttpPut]
 		[Route("edit")]
-		public async Task<IActionResult> EditCurrentUserAsync(UserResponse updatedUser)
+		public async Task<IActionResult> EditCurrentUserAsync([FromBody] UserResponse updatedUser)
 		{
-			await _userService.UpdateUserProfileAsync(this.User, updatedUser);
+			var result = await _userService.UpdateUserProfileAsync(this.User, updatedUser);
 
-			return NoContent();
+			return result.Match<IActionResult>(
+				m => NoContent(),
+				err => BadRequest(err));
 		}
 
 		[HttpPut]
 		[Route("password")]
-		public async Task<IActionResult> ChangeCurrentPasswordAsync(PasswordRequest password)
+		public async Task<IActionResult> ChangeCurrentPasswordAsync([FromBody] PasswordRequest password)
 		{
-			await _userService.ChangePasswordAsync(this.User, password);
+			var result = await _userService.ChangePasswordAsync(this.User, password);
 
-			return NoContent();
+			return result.Match<IActionResult>(
+				m => NoContent(),
+				err => BadRequest(err));
 		}
 	}
 }

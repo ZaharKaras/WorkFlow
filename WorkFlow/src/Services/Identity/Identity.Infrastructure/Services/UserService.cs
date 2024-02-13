@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using Identity.Core.Abstractions;
 using Identity.Core.Entities;
+using Identity.Core.Errors;
 using Identity.Infrastructure.DTOs;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson.IO;
 using System.Security.Claims;
 
 namespace Identity.Infrastructure.Services
@@ -21,13 +24,13 @@ namespace Identity.Infrastructure.Services
 			_mapper = mapper;
 		}
 
-		public async Task ChangePasswordAsync(ClaimsPrincipal claimsPrincipal, PasswordRequest password)
+		public async Task<Result<bool, Error>> ChangePasswordAsync(ClaimsPrincipal claimsPrincipal, PasswordRequest password)
 		{
 			var user = await _userManager.GetUserAsync(claimsPrincipal);
 
-			if (user == null)
+			if (user is null)
 			{
-				throw new Exception("User does not exist");
+				return UserErrors.UserNotFound;
 			}
 
 			var changePasswordResult = await _userManager.ChangePasswordAsync(user, password.OldPassword, password.NewPassword);
@@ -39,37 +42,45 @@ namespace Identity.Infrastructure.Services
 					_logger.LogError(error.Description);
 				}
 
-				throw new Exception("Password change failed");
+				return UserErrors.PasswordChangeError;
 			}
 
-			_logger.LogInformation("User changed their password successfully.");
+			_logger.LogInformation("User changed password successfully.");
+
+			return true;
 		}
 	
 
-		public async Task<UserResponse> GetUserProfileAsync(ClaimsPrincipal claimsPrincipal)
+		public async Task<Result<UserResponse, Error>> GetUserProfileAsync(ClaimsPrincipal claimsPrincipal)
 		{
 			var user = await _userManager.GetUserAsync(claimsPrincipal);
 
-			if (user == null)
-				throw new Exception("User does not exist");
+			if (user is null)
+			{
+				return UserErrors.UserNotFound;
+			}
 
 			var result = _mapper.Map<UserResponse>(user);
 
 			return result!;
 		}
 
-		public async Task UpdateUserProfileAsync(ClaimsPrincipal claimsPrincipal, UserResponse updatedUser)
+		public async Task<Result<bool, Error>> UpdateUserProfileAsync(ClaimsPrincipal claimsPrincipal, UserResponse updatedUser)
 		{
 			var user = await _userManager.GetUserAsync(claimsPrincipal);
 
-			if (user == null)
-				throw new Exception("User does not exist");
+			if (user is null)
+			{
+				return UserErrors.UserNotFound;
+			}
 
 			user = _mapper.Map<User>(user);
 
 			_mapper.Map(updatedUser, user);
 
 			await _userManager.UpdateAsync(user!);
+
+			return true;
 		}
 	}
 }

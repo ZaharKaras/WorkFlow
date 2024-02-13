@@ -1,17 +1,17 @@
 ﻿namespace Identity.API.Middlewares
 {
-	public class CustomExceptionMiddleware
+	public class ExceptionHandlingMiddleware
 	{
 		private readonly RequestDelegate _next;
-		private readonly ILogger<CustomExceptionMiddleware> _logger;
+		private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-		public CustomExceptionMiddleware(RequestDelegate next, ILogger<CustomExceptionMiddleware> logger)
+		public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 		{
 			_next = next;
 			_logger = logger;
 		}
 
-		public async Task InvokeAsync(HttpContext context)
+		public async Task Invoke(HttpContext context)
 		{
 			try
 			{
@@ -19,18 +19,9 @@
 			}
 			catch (Exception ex)
 			{
-				context.Response.ContentType = "application/json";
-				context.Response.StatusCode = 500;
-
-				var error = new Error
-				{
-					StatusCode = context.Response.StatusCode.ToString(),
-					Message = ex.Message,
-				};
-
-				await context.Response.WriteAsync(error.ToString());
-
-				_logger.LogError($"Error handled by middleware => { ex.Message.ToString()}");
+				_logger.LogError(ex, "An unhandled exception occurred.");
+				context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+				await context.Response.WriteAsync("An unexpected error occurred");
 			}
 		}
 	}

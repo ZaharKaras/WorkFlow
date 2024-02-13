@@ -1,18 +1,16 @@
 ﻿using Identity.API.DTOs;
+using Identity.Core.Abstractions;
 using Identity.Core.Entities;
+using Identity.Core.Errors;
 using Identity.Core.Models;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Identity.Infrastructure.Services
 {
@@ -77,7 +75,7 @@ namespace Identity.Infrastructure.Services
 			return dateTimeVal;
 		}
 
-		public async Task<AuthResult?> VerifyAndGenerateToken(TokenRequest tokenRequest)
+		public async Task<Result<AuthResult, Error>?> VerifyAndGenerateTokenAsync(TokenRequest tokenRequest)
 		{
 			var jwtTokenHandler = new JwtSecurityTokenHandler();
 
@@ -99,63 +97,43 @@ namespace Identity.Infrastructure.Services
 			var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
 
 			if (expiryDate > DateTime.Now)
-				return new AuthResult()
-				{
-					Result = false,
-					Errors = new List<string>()
-					{
-						"Expired token"
-					}
-				};
+			{
+				return TokenErrors.ExpiredToken;
+			}
 
 			var refreshTokens = await _refreshTokenService.GetAsync();
 			var storeToken = refreshTokens!.FirstOrDefault(x => x.Token == tokenRequest.RefreshToken);
 
-			if (storeToken is null)
-				return new AuthResult()
-				{
-					Result = false,
-					Errors = new List<string>()
-					{
-						"Invalid tokens"
-					}
-				};
-
-			if (storeToken.IsUsed || storeToken.IsRevoked)
-				return new AuthResult()
-				{
-					Result = false,
-					Errors = new List<string>()
-					{
-						"Invalid tokens"
-					}
-				};
+			if (storeToken is null || storeToken.IsUsed || storeToken.IsRevoked)
+			{
+				return TokenErrors.InvalidTokens;
+			}
 
 			var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti)!.Value;
+
 			if (storeToken.JwtId != jti || storeToken.ExpiryDate < DateTime.UtcNow)
-				return new AuthResult()
-				{
-					Result = false,
-					Errors = new List<string>()
-					{
-						"Invalid tokens"
-					}
-				};
+			{
+				return TokenErrors.InvalidTokens;
+			}
 
 			var dbUser = await _userManager.FindByIdAsync(storeToken.UserId!);
+
+			if (dbUser is null)
+			{
+				return UserErrors.UserNotFound;
+			}
 
 			var token = GenerateJwtToken(dbUser);
 			var jwtToken = jwtTokenHandler.WriteToken(token);
 
 			return new AuthResult()
 			{
-				Result = true,
 				Token = jwtToken,
 				RefreshToken = tokenRequest.RefreshToken
 			};
 		}
 
-		public async Task<AuthResult> GenerateToken(User user)
+		public async Task<Result<AuthResult, Error>> GenerateTokenAsync(User user)
 		{
 			var jwtTokenHandler = new JwtSecurityTokenHandler();
 
@@ -177,7 +155,6 @@ namespace Identity.Infrastructure.Services
 
 			return new AuthResult()
 			{
-				Result = true,
 				RefreshToken = refreshToken.Token,
 				Token = jwtToken
 			};

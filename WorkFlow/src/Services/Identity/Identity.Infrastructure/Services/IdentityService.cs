@@ -1,5 +1,7 @@
 ﻿using Identity.API.DTOs;
+using Identity.Core.Abstractions;
 using Identity.Core.Entities;
+using Identity.Core.Errors;
 using Identity.Core.Models;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -27,87 +29,59 @@ namespace Identity.Infrastructure.Services
 			_logger = logger;
 		}
 
-		public async Task<AuthResult> Login(LoginRequest loginRequest)
+		public async Task<Result<AuthResult, Error>> LoginAsync(LoginRequest loginRequest)
 		{
 			var existingUser = await _userManager.FindByEmailAsync(loginRequest.Email);
 
 			if (existingUser is null)
-				return (new AuthResult()
-				{
-					Result = false,
-					Errors = new List<string>()
-						{
-							"Incorrect email"
-						}
-				});
+			{
+				return UserErrors.UserNotFound;
+			}
 
 			var isCorrect = await _userManager.CheckPasswordAsync(existingUser, loginRequest.Password);
 
 			if (!isCorrect)
-				return (new AuthResult()
-				{
-					Result = false,
-					Errors = new List<string>()
-						{
-							"Incorrect password"
-						}
-				});
+			{
+				return UserErrors.IncorrectPassword;
+			}
 
-			var token = await _tokenService.GenerateToken(existingUser);
+			var token = await _tokenService.GenerateTokenAsync(existingUser);
 
-			_logger.LogInformation($"{existingUser.UserName} is login");
+			_logger.LogInformation($"{existingUser.UserName} is log in");
 
 			return (token);
 		}
 
-		public async Task<AuthResult?> Logout(TokenRequest tokenRequest)
+		public async Task<Result<bool, Error>> LogoutAsync(TokenRequest tokenRequest)
 		{
 			var refreshTokens = await _refreshTokenService.GetAsync();
 			var storeToken = refreshTokens!.FirstOrDefault(x => x.Token == tokenRequest.RefreshToken);
 
 			if (storeToken is null)
-				return new AuthResult()
-				{
-					Result = false,
-					Errors = new List<string>()
-					{
-						"Refresh token doesn't exist"
-					}
-				};
+			{
+				return TokenErrors.RefreshTokenNotFound;
+			}
 
 			storeToken.IsRevoked = true;
 			await _refreshTokenService.UpdateAsync(storeToken.Id!, storeToken);
 
 			_logger.LogInformation("Token is updated");
 
-			return new AuthResult()
-			{
-				Result = true,
-				Token = null,
-				RefreshToken = null
-			};
+			return true;
 		}
 
-		public async Task<AuthResult?> RefreshToken(TokenRequest tokenRequest)
+		public async Task<Result<AuthResult, Error>> RefreshTokenAsync(TokenRequest tokenRequest)
 		{
-			var result = await _tokenService.VerifyAndGenerateToken(tokenRequest);
-
-			return result;
+			return await _tokenService.VerifyAndGenerateTokenAsync(tokenRequest);
 		}
 
-		public async Task<AuthResult> Register(RegistrationRequest registerRequest)
+		public async Task<Result<AuthResult, Error>> RegisterAsync(RegistrationRequest registerRequest)
 		{
 			var existingUser = await _userManager.FindByEmailAsync(registerRequest.Email);
 			if (existingUser != null)
-				return (new AuthResult()
-				{
-					Result = false,
-					Errors = new List<string>()
-					{
-						"Email already exist"
-					}
-				});
-
+			{
+				return UserErrors.UserAlreadyExists;
+			}
 
 			var newUser = new User()
 			{
@@ -119,21 +93,14 @@ namespace Identity.Infrastructure.Services
 
 			if (isCreated.Succeeded)
 			{
-				var token = await _tokenService.GenerateToken(newUser);
+				_logger.LogInformation($"{registerRequest.Name} is registrated");
+
+				var token = await _tokenService.GenerateTokenAsync(newUser);
 
 				return (token);
 			}
 
-			_logger.LogInformation($"{registerRequest.Name} is registrated");
-
-			return (new AuthResult()
-			{
-				Result = false,
-				Errors = new List<string>()
-				{
-						isCreated.Errors.ToString()!,
-				}
-			});
+			return UserErrors.UserCreationFailed;
 		}
 	}
 }

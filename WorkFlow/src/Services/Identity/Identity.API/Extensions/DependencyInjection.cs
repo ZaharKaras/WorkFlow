@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Identity.Infrastructure.Settings;
 using Identity.Infrastructure.Services.Interfaces;
 using Identity.Infrastructure.Services;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Identity.API.Extensions
 {
@@ -70,6 +72,18 @@ namespace Identity.API.Extensions
 				ValidateLifetime = true
 			};
 
+			services.AddSwaggerGen(options =>
+			{
+				options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+				{
+					In = ParameterLocation.Header,
+					Name = "Authorization",
+					Type = SecuritySchemeType.ApiKey
+				});
+
+				options.OperationFilter<SecurityRequirementsOperationFilter>();
+			});
+
 			services.AddSingleton(tokenValidationParameter);
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer();
@@ -93,6 +107,7 @@ namespace Identity.API.Extensions
 			services.AddScoped<ITokenService, TokenService>();
 			services.AddScoped<IIdentityService, IdentityService>();
 			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<ICacheService, CacheService>();
 
 			return services;
 		}
