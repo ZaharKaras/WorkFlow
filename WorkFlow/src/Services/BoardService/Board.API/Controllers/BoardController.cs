@@ -1,13 +1,9 @@
 ﻿using Board.Application.Boards.Create;
-using Board.Application.Boards.Delete;
 using Board.Application.Boards.DTOs;
-using Board.Application.Boards.Get;
-using Board.Application.Boards.List;
 using Board.Application.Boards.Update;
 using Board.Application.BoardUsers.AddMember;
 using Board.Application.BoardUsers.DeleteMember;
-using Board.Application.BoardUsers.GetMembers;
-using MediatR;
+using Board.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Board.API.Controllers
@@ -16,21 +12,18 @@ namespace Board.API.Controllers
 	[ApiController]
 	public class BoardController : ControllerBase
 	{
-		private readonly IMediator _mediator;
-
-		public BoardController(IMediator mediator)
+		private readonly IBoardService _boardService;
+		public BoardController(IBoardService boardService)
 		{
-			_mediator = mediator;
+			_boardService = boardService;
 		}
 
 		[HttpGet]
-		[Route("get-boards-by-user-id")]
+		[Route("user/{userId}/boards")]
 		public async Task<ActionResult<IEnumerable<BoardsListDTO>>> GetBoardsByUserId(
 			Guid userId, CancellationToken token)
 		{
-			var query = new ListBoardQuery(userId);
-
-			var result = await _mediator.Send(query, token);
+			var result = await _boardService.GetBoardsByUserId(userId, token);
 
 			if (result is null)
 				return NotFound();
@@ -39,56 +32,48 @@ namespace Board.API.Controllers
 		}
 
 		[HttpGet]
-		[Route("get-board-by-id")]
+		[Route("{id}")]
 		public async Task<ActionResult<Core.Entities.Board>> GetBoardById(
 			Guid id, CancellationToken token)
 		{
-			var query = new GetBoardQuery(id);
-
-			var result = await _mediator.Send(query, token);
+			var result = await _boardService.GetBoardById(id, token);
 
 			return Ok(result);
 		}
 
 		[HttpPost]
-		[Route("create")]
 		public async Task<IActionResult> CreateBoard(
 			[FromBody] CreateBoardCommand command, CancellationToken token)
 		{
-			await _mediator.Send(command, token);
+			await _boardService.CreateBoard(command, token);
 
 			return NoContent();
 		}
 
 		[HttpDelete]
-		[Route("delete")]
 		public async Task<IActionResult> DeleteBoard(
 			Guid id, CancellationToken token)
 		{
-			var command = new DeleteBoardCommand(id);
-			await _mediator.Send(command, token);
+			await _boardService.DeleteBoard(id, token);
 
 			return NoContent();
 		}
 
 		[HttpPut]
-		[Route("update")]
 		public async Task<IActionResult> UpdateBoard(
 			[FromBody] UpdateBoardCommand command, CancellationToken token)
 		{
-			await _mediator.Send(command, token);
+			await _boardService.UpdateBoard(command, token);
 
 			return NoContent();
 		}
 
 		[HttpGet]
-		[Route("get-users-by-board-id")]
+		[Route("{boardId}/users")]
 		public async Task<ActionResult<IEnumerable<Guid>>> GetUsersByBoardId(
 			[FromQuery] Guid boardId, CancellationToken token)
 		{
-			var query = new GetMembersQuery(boardId);
-
-			var result = await _mediator.Send(query, token);
+			var result = await _boardService.GetMembersByBoardId(boardId, token);
 
 			if (result is null)
 				return NotFound();
@@ -101,7 +86,7 @@ namespace Board.API.Controllers
 		public async Task<IActionResult> AddMemberToBoard(
 			[FromBody] AddMemberCommand command, CancellationToken token)
 		{
-			await _mediator.Send(command, token);
+			await _boardService.AddMemberToBoard(command, token);
 
 			return NoContent();
 		}
@@ -111,10 +96,9 @@ namespace Board.API.Controllers
 		public async Task<IActionResult> RemoveMemberFromBoard(
 			[FromBody] DeleteMemberCommand command, CancellationToken token)
 		{
-			await _mediator.Send(command, token);
+			await _boardService.RemoveMemberFromBoard(command, token);
 
 			return NoContent();
 		}
-
 	}
 }

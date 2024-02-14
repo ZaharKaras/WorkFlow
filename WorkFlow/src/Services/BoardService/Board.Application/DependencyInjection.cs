@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using Board.Application.Services;
+using Board.Application.Services.Interfaces;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Board.Application
@@ -15,6 +17,9 @@ namespace Board.Application
 			services.AddValidatorsFromAssembly(assembly);
 
 			services.AddAutoMapper(assembly);
+
+			services.AddScoped<IBoardService, BoardService>();
+			services.AddScoped<ICardService, CardService>();
 
 			return services;
 		}
