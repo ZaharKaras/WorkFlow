@@ -20,7 +20,7 @@ namespace Board.Application.Boards.List
 		{
 			var boards = await _boardRepository.GetByUserIdAsync(request.userId);
 
-			var boardDTOs = boards.Select(board => _mapper.Map<BoardsListDTO>(board));
+			var boardDTOs = _mapper.Map<List<BoardsListDTO>>(boards);
 
 			return boardDTOs;
 		}
