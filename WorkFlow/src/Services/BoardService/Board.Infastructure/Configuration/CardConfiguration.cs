@@ -10,15 +10,15 @@ namespace Board.Infrastructure.Configuration
 		{
 			builder.ToTable("Cards");
 
-			builder.HasKey(e => e.Id);
+			builder.HasKey(entity => entity.Id);
 
-			builder.Property(e => e.Title)
+			builder.Property(entity => entity.Title)
 				.IsRequired()
 				.HasMaxLength(255);
 
-			builder.HasMany(c => c.CardUsers)
+			builder.HasMany(card => card.CardUsers)
 				.WithOne()
-				.HasForeignKey(cu => cu.CardId)
+				.HasForeignKey(cardUser => cardUser.CardId)
 				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}

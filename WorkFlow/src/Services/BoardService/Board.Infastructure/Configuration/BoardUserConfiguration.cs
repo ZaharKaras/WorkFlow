@@ -10,11 +10,11 @@ namespace Board.Infrastructure.Configuration
 		{
 			builder.ToTable("BoardUsers");
 
-			builder.HasKey(bu => new { bu.BoardId, bu.UserId });
+			builder.HasKey(boardUser => new { boardUser.BoardId, boardUser.UserId });
 
-			builder.HasOne(bu => bu.Board)
-				.WithMany(b => b.BoardUsers)
-				.HasForeignKey(bu => bu.BoardId)
+			builder.HasOne(boardUser => boardUser.Board)
+				.WithMany(board => board.BoardUsers)
+				.HasForeignKey(boardUser => boardUser.BoardId)
 				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}

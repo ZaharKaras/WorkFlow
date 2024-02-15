@@ -9,15 +9,15 @@ namespace Board.Infrastructure.Configuration
 		{
 			builder.ToTable("Boards");
 
-			builder.HasKey(e => e.Id);
+			builder.HasKey(entity => entity.Id);
 
-			builder.Property(e => e.Name)
+			builder.Property(entity => entity.Name)
 				.IsRequired()
 				.HasMaxLength(255);
 
-			builder.HasMany(b => b.BoardUsers)
+			builder.HasMany(board => board.BoardUsers)
 				.WithOne()
-				.HasForeignKey(bu => bu.BoardId)
+				.HasForeignKey(boardUser => boardUser.BoardId)
 				.OnDelete(DeleteBehavior.Cascade); 
 		}
 	}
