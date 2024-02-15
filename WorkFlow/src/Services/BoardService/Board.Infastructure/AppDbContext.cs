@@ -1,6 +1,7 @@
 ﻿using Board.Core.Entities;
 using Board.Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Board.Infrastructure
 {
@@ -18,10 +19,7 @@ namespace Board.Infrastructure
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.ApplyConfiguration(new BoardConfiguration());
-			modelBuilder.ApplyConfiguration(new CardConfiguration());
-			modelBuilder.ApplyConfiguration(new BoardUserConfiguration());
-			modelBuilder.ApplyConfiguration(new CardUserConfiguration());
+			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 		}
 
 	}

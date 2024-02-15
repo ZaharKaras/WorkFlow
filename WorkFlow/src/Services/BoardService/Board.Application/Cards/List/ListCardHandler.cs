@@ -20,7 +20,7 @@ namespace Board.Application.Cards.List
 		{
 			var cards = await _cardRepository.GetByBoardIdAsync(request.boardId);
 
-			var cardDTOs = cards.Select(card => _mapper.Map<CardListDTO>(card));
+			var cardDTOs = _mapper.Map<IEnumerable<CardListDTO>>(cards);
 
 			return cardDTOs;
 		}
