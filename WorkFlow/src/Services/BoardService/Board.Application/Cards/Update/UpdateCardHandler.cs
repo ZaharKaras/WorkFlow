@@ -17,8 +17,10 @@ namespace Board.Application.Cards.Update
 		{
 			var card = await _cardRepository.GetByIdAsync(request.id);
 
-			if (card == null)
+			if (card is null)
+			{
 				throw new CardNotFoundException(request.id);
+			}
 
 			card.SetDescription(request.description);
 			card.SetDeadLine(request.deadLine);

@@ -17,8 +17,10 @@ namespace Board.Application.Boards.Update
 		{
 			var board = await _boardRepository.GetByIdAsync(request.id);
 
-			if (board == null)
+			if (board is null)
+			{
 				throw new BoardNotFoundException(request.id);
+			}
 
 			board.Update(request.boardName, request.ownerId);
 

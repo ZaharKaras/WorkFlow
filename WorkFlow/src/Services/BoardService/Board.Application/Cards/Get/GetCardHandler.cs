@@ -23,7 +23,9 @@ namespace Board.Application.Cards.Get
 			var card = await _cardRepository.GetByIdAsync(request.cardId);
 
 			if (card == null)
+			{
 				throw new CardNotFoundException(request.cardId);
+			}
 
 			return _mapper.Map<CardDTO>(card);
 		}

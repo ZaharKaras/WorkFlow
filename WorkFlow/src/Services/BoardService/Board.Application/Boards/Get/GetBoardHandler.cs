@@ -21,8 +21,10 @@ namespace Board.Application.Boards.Get
 		{
 			var board = await _boardRepository.GetByIdAsync(request.boardId);
 
-			if (board == null)
+			if (board is null)
+			{
 				throw new BoardNotFoundException(request.boardId);
+			}
 
 			return _mapper.Map<BoardDTO>(board);
 		}

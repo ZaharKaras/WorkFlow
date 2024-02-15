@@ -17,8 +17,10 @@ namespace Board.Application.Boards.Delete
 		{
 			var board = await _boardRepository.GetByIdAsync(request.boardId);
 
-			if (board == null)
+			if (board is null)
+			{
 				throw new BoardNotFoundException(request.boardId);
+			}
 
 			await _boardRepository.DeleteAsync(request.boardId, cancellationToken);
 			await _boardRepository.SaveChangesAsync(cancellationToken);

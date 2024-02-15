@@ -18,7 +18,9 @@ namespace Board.Application.CardUsers.RemoveAssignee
 			var cardUser = await _cardUserRepository.GetByIdAsync(request.cardId);
 
 			if (cardUser == null)
+			{
 				throw new CardNotFoundException(request.cardId);
+			}
 
 			await _cardUserRepository.DeleteAsync(cardUser.Id, cancellationToken);
 			await _cardUserRepository.SaveChangesAsync(cancellationToken);

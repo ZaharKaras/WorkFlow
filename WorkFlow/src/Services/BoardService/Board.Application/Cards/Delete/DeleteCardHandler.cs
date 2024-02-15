@@ -17,8 +17,10 @@ namespace Board.Application.Cards.Delete
 		{
 			var card = await _cardRepository.GetByIdAsync(request.cardId);
 
-			if (card == null)
+			if (card is null)
+			{
 				throw new CardNotFoundException(request.cardId);
+			}
 
 			await _cardRepository.DeleteAsync(request.cardId, cancellationToken);
 			await _cardRepository.SaveChangesAsync(cancellationToken);

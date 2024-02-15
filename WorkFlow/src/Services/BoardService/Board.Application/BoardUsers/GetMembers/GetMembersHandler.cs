@@ -17,8 +17,10 @@ namespace Board.Application.BoardUsers.GetMembers
 		{
 			var members = await _boardUserRepository.GetByBoardIdAsync(request.boardId, cancellationToken);
 
-			if (members == null)
+			if (members is null)
+			{
 				throw new BoardNotFoundException(request.boardId);
+			}
 
 			return members;
 		}

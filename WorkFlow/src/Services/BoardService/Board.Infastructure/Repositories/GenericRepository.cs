@@ -39,6 +39,7 @@ namespace Board.Infrastructure.Repositories
 		public Task UpdateAsync(T entity, CancellationToken token = default)
 		{
 			_dbSet.Update(entity);
+
 			return Task.CompletedTask;
 		}
 	}

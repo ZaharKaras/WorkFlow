@@ -17,8 +17,10 @@ namespace Board.Application.BoardUsers.DeleteMember
 		{
 			var boardUser = await _boardUserRepository.GetByIdAsync(request.boardId);
 
-			if (boardUser == null)
+			if (boardUser is null)
+			{
 				throw new BoardNotFoundException(request.boardId);
+			}
 
 			await _boardUserRepository.DeleteAsync(boardUser.Id, cancellationToken);
 			await _boardUserRepository.SaveChangesAsync(cancellationToken);

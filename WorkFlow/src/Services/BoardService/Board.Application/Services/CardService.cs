@@ -25,6 +25,7 @@ namespace Board.Application.Services
 		{
 			var query = new ListCardQuery(userId);
 			var result = await _mediator.Send(query, token);
+
 			return result;
 		}
 
