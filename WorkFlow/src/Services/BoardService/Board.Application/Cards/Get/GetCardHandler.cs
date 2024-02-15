@@ -22,7 +22,7 @@ namespace Board.Application.Cards.Get
 		{
 			var card = await _cardRepository.GetByIdAsync(request.cardId);
 
-			if (card == null)
+			if (card is null)
 			{
 				throw new CardNotFoundException(request.cardId);
 			}
