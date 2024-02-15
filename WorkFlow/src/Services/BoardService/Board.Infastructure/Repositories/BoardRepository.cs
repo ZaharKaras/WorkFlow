@@ -1,4 +1,5 @@
 ﻿using Board.Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Board.Infrastructure.Repositories
 {
@@ -8,18 +9,18 @@ namespace Board.Infrastructure.Repositories
 		public BoardRepository(AppDbContext dbContext) 
 			: base(dbContext) { }
 
-		public Task<IEnumerable<Core.Entities.Board>> GetByUserIdAsync(Guid userId, CancellationToken token = default)
+		public async Task<IEnumerable<Core.Entities.Board>> GetByUserIdAsync(Guid userId, CancellationToken token = default)
 		{
-			var boardIds = _context.BoardsUsers
-				.Where(bu => bu.UserId == userId)
-				.Select(bu => bu.BoardId)
-				.ToList();
+			var boardIds = await _context.BoardsUsers
+				.Where(boardUser => boardUser.UserId == userId)
+				.Select(boardUser => boardUser.BoardId)
+				.ToListAsync(token);
 
-			var boards = _context.Boards
+			var boards = await _context.Boards
 				.Where(board => boardIds.Contains(board.Id))
-				.AsEnumerable();
+				.ToListAsync(token);
 
-			return Task.FromResult(boards);
+			return boards;
 		}
 	}
 }

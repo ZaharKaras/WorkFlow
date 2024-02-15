@@ -27,7 +27,7 @@ namespace Board.Application.Cards.Update
 			card.ChangeStatus(request.status);
 			card.UpdateTitle(request.title);
 
-			await _cardRepository.UpdateAsync(card, cancellationToken);
+			_cardRepository.Update(card);
 			await _cardRepository.SaveChangesAsync(cancellationToken);
 		}
 	}

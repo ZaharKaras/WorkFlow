@@ -24,7 +24,7 @@ namespace Board.Application.Boards.Update
 
 			board.Update(request.boardName, request.ownerId);
 
-			await _boardRepository.UpdateAsync(board, cancellationToken);
+			_boardRepository.Update(board);
 			await _boardRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
