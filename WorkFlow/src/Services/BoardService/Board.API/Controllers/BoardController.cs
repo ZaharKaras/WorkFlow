@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Board.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]s")]
 	[ApiController]
 	public class BoardController : ControllerBase
 	{
@@ -19,9 +19,9 @@ namespace Board.API.Controllers
 		}
 
 		[HttpGet]
-		[Route("user/{userId}/boards")]
+		[Route("users/{userId}/boards")]
 		public async Task<ActionResult<IEnumerable<BoardsListDTO>>> GetBoardsByUserId(
-			Guid userId, CancellationToken token)
+			[FromBody] Guid userId, CancellationToken token)
 		{
 			var result = await _boardService.GetBoardsByUserId(userId, token);
 
@@ -34,7 +34,7 @@ namespace Board.API.Controllers
 		[HttpGet]
 		[Route("{id}")]
 		public async Task<ActionResult<Core.Entities.Board>> GetBoardById(
-			Guid id, CancellationToken token)
+			[FromBody]Guid id, CancellationToken token)
 		{
 			var result = await _boardService.GetBoardById(id, token);
 
@@ -52,7 +52,7 @@ namespace Board.API.Controllers
 
 		[HttpDelete]
 		public async Task<IActionResult> DeleteBoard(
-			Guid id, CancellationToken token)
+			[FromBody] Guid id, CancellationToken token)
 		{
 			await _boardService.DeleteBoard(id, token);
 
@@ -71,7 +71,7 @@ namespace Board.API.Controllers
 		[HttpGet]
 		[Route("{boardId}/users")]
 		public async Task<ActionResult<IEnumerable<Guid>>> GetUsersByBoardId(
-			[FromQuery] Guid boardId, CancellationToken token)
+			[FromBody] Guid boardId, CancellationToken token)
 		{
 			var result = await _boardService.GetMembersByBoardId(boardId, token);
 
@@ -82,7 +82,7 @@ namespace Board.API.Controllers
 		}
 
 		[HttpPost]
-		[Route("add-member")]
+		[Route("{boardId}/members")]
 		public async Task<IActionResult> AddMemberToBoard(
 			[FromBody] AddMemberCommand command, CancellationToken token)
 		{
@@ -92,7 +92,7 @@ namespace Board.API.Controllers
 		}
 
 		[HttpDelete]
-		[Route("remove-member")]
+		[Route("{boardId}/members")]
 		public async Task<IActionResult> RemoveMemberFromBoard(
 			[FromBody] DeleteMemberCommand command, CancellationToken token)
 		{

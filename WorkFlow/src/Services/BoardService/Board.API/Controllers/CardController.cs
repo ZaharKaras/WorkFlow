@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Board.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]s")]
 	[ApiController]
 	public class CardController : ControllerBase
 	{
@@ -25,7 +25,7 @@ namespace Board.API.Controllers
 		[HttpGet]
 		[Route("users/{userId}/cards")]
 		public async Task<ActionResult<IEnumerable<CardListDTO>>> GetBoardsByUserId(
-			Guid userId, CancellationToken token)
+			[FromBody] Guid userId, CancellationToken token)
 		{
 			var result = await _cardService.GetCardsByUserId(userId, token);
 
@@ -38,7 +38,7 @@ namespace Board.API.Controllers
 		[HttpGet]
 		[Route("{id}")]
 		public async Task<ActionResult<Card>> GetCardById(
-			Guid id, CancellationToken token)
+			[FromBody] Guid id, CancellationToken token)
 		{
 			var result = await _cardService.GetCardById(id, token);
 
@@ -75,7 +75,7 @@ namespace Board.API.Controllers
 		[HttpGet]
 		[Route("{cardId}/users")]
 		public async Task<ActionResult<IEnumerable<Guid>>> GetUsersByCardId(
-			[FromQuery] Guid cardId, CancellationToken token)
+			[FromBody] Guid cardId, CancellationToken token)
 		{
 			var result = await _cardService.GetAssigneesByCardId(cardId, token);
 
