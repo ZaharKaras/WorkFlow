@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  board.api:
+    image: ${DOCKER_REGISTRY-}boardapi
+    container_name: board.api
+    build:
+      context: .
+      dockerfile: src/Services/BoardService/Board.API/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081" 
+
+  board.database:
+    image: postgres:latest
+    container_name: board.database
+    environment:
+      - POSTGRES_DB=boards_service
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=11012004
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
