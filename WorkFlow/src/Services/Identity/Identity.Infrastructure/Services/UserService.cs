@@ -45,7 +45,7 @@ namespace Identity.Infrastructure.Services
 
 			_logger.LogInformation("User changed password successfully.");
 
-			return true;
+			return false;
 		}
 	
 
@@ -63,7 +63,7 @@ namespace Identity.Infrastructure.Services
 			return result!;
 		}
 
-		public async Task<Result<bool, Error>> UpdateUserProfileAsync(ClaimsPrincipal claimsPrincipal, UserResponse updatedUser)
+		public async Task<Result<UserResponse, Error>> UpdateUserProfileAsync(ClaimsPrincipal claimsPrincipal, UserResponse updatedUser)
 		{
 			var user = await _userManager.GetUserAsync(claimsPrincipal);
 
@@ -78,7 +78,9 @@ namespace Identity.Infrastructure.Services
 
 			await _userManager.UpdateAsync(user!);
 
-			return true;
+			var result = _mapper.Map<UserResponse>(user);
+
+			return result!;
 		}
 	}
 }
