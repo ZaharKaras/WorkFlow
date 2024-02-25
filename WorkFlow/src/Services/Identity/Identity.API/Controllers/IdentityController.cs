@@ -1,7 +1,6 @@
 ﻿using Identity.API.DTOs;
 using Identity.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using LoginRequest = Identity.API.DTOs.LoginRequest;
 
 namespace Identity.API.Controllers
 {
