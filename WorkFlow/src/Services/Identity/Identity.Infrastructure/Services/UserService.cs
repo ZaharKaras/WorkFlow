@@ -36,10 +36,9 @@ namespace Identity.Infrastructure.Services
 
 			if (!changePasswordResult.Succeeded)
 			{
-				foreach (var error in changePasswordResult.Errors)
-				{
-					_logger.LogError(error.Description);
-				}
+				changePasswordResult.Errors.Select(error => error.Description)
+					.ToList()
+					.ForEach(description => _logger.LogError(description));
 
 				return UserErrors.PasswordChangeError;
 			}
