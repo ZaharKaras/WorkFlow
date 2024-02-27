@@ -23,12 +23,7 @@ namespace Board.API.Controllers
 		public async Task<ActionResult<IEnumerable<BoardsListDTO>>> GetBoardsByUserId(
 			[FromBody] Guid userId, CancellationToken token)
 		{
-			var result = await _boardService.GetBoardsByUserId(userId, token);
-
-			if (result is null)
-				return NotFound();
-
-			return Ok(result);
+			return Ok(await _boardService.GetBoardsByUserId(userId, token));
 		}
 
 		[HttpGet]
