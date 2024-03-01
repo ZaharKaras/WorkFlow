@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.ServiceModel.Syndication;
-using System.Xml;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration.UserSecrets;
+using RSS.Application.DTOs;
+using RSS.Application.Feeds.Create;
+using RSS.Application.Feeds.Delete;
+using RSS.Application.Feeds.Get;
+using RSS.Application.Feeds.List;
+
 
 namespace RSS.API.Controllers
 {
@@ -9,19 +14,55 @@ namespace RSS.API.Controllers
 	[ApiController]
 	public class RssController : ControllerBase
 	{
+		private readonly IMediator _mediator;
+
+		public RssController(IMediator mediator)
+		{
+			_mediator = mediator;
+		}
 
 		[HttpPost]
 		[Route("feeds")]
-		public async Task<ActionResult<SyndicationItem>> GetFeedAsync(
-			[FromBody] string url, CancellationToken token)
+		public async Task<IActionResult> AddFeedAsync(
+			[FromBody] CreateFeedCommand command, CancellationToken token)
 		{
-			using var reader = XmlReader.Create(url);
-			var feed = SyndicationFeed.Load(reader);
+			await _mediator.Send(command, token);
 
-			var post = feed.Items.FirstOrDefault();
-
-			return Ok(post);
+			return NoContent();
 		}
+
+		[HttpGet]
+		[Route("users/{userId}")]
+		public async Task<ActionResult<IEnumerable<FeedDTO>>> GetFeedsAsync(
+			[FromRoute] Guid userId, CancellationToken token)
+		{
+			var query = new ListFeedQuery(userId);
+			var result = await _mediator.Send(query, token);
+
+			return Ok(result);
+		}
+
+		[HttpGet]
+		[Route("feeds/{feedId}")]
+		public async Task<ActionResult<IEnumerable<FeedDTO>>> GetFeedItemsAsync(
+			[FromRoute] Guid feedId, CancellationToken token)
+		{
+			var query = new GetFeedQuery(feedId);
+			var result = await _mediator.Send(query, token);
+
+			return Ok(result);
+		}
+
+		[HttpDelete]
+		public async Task<IActionResult> DeleteFeedAsync(
+			[FromBody] Guid id, CancellationToken token)
+		{
+			var command = new DeleteFeedCommand(id);
+			await _mediator.Send(command, token);
+
+			return NoContent();
+		}
+
 
 	}
 }

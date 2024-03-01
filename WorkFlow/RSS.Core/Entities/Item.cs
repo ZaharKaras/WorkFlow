@@ -1,13 +1,11 @@
-﻿using RSS.Core.Abstractions;
-
-namespace RSS.Core.Entities
+﻿namespace RSS.Core.Entities
 {
-	public class Item : Entity
+	public class Item
 	{
-		public Feed Feed { get; set; } = null!;
+		public Item() { }
+
 		public string Title { get; set; } = null!;
 		public string Uri { get; set; } = null!;
-		public DateTime Published { get; set; }
-		public DateTime Read { get; set; }
+		public DateTime PubDate { get; set; }
 	}
 }
