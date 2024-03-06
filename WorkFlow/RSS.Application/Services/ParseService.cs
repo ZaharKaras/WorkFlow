@@ -1,5 +1,5 @@
-﻿using RSS.Core.Entities;
-using RSS.Core.Interfaces;
+﻿using RSS.Application.Services.Interfaces;
+using Serilog;
 using System.ServiceModel.Syndication;
 using System.Xml;
 
@@ -73,6 +73,8 @@ namespace RSS.Application.Services
 
 				items.Add(item);
 			}
+
+			Log.Information("Service send parsed xml");
 
 			return items;
 		}

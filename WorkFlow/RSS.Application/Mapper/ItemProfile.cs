@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using RSS.Application.DTOs;
-using RSS.Core.Entities;
 using System.ServiceModel.Syndication;
 
 namespace RSS.Application.Mapper
@@ -18,8 +17,6 @@ namespace RSS.Application.Mapper
 
 				.ForMember(dest => dest.PubDate, opt => opt
 				.MapFrom(src => src.PublishDate.DateTime));
-
-			CreateMap<Item, ItemDTO>();
 		}
 	}
 }

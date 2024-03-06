@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration.UserSecrets;
 using RSS.Application.DTOs;
 using RSS.Application.Feeds.Create;
 using RSS.Application.Feeds.Delete;

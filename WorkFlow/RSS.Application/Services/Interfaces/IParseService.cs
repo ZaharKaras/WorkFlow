@@ -1,6 +1,6 @@
 ﻿using System.ServiceModel.Syndication;
 
-namespace RSS.Core.Interfaces
+namespace RSS.Application.Services.Interfaces
 {
 	public interface IParseService
 	{

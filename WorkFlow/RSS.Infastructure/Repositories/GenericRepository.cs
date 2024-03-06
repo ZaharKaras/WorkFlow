@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RSS.Core.Abstractions;
 using RSS.Core.Interfaces;
 
 namespace RSS.Infastructure.Repositories

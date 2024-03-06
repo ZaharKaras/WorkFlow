@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using RSS.Application.Services.Interfaces;
 using RSS.Core.Entities;
 using RSS.Core.Interfaces;
 

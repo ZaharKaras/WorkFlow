@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using RSS.Core.Exceptions;
 using RSS.Core.Interfaces;
 
 namespace RSS.Application.Feeds.Delete
@@ -18,7 +19,7 @@ namespace RSS.Application.Feeds.Delete
 
 			if (feed is null)
 			{
-				throw new ArgumentException("There is no such id");
+				throw new FeedNotFoundException(request.id);
 			}
 
 			await _feedRepository.DeleteAsync(request.id, cancellationToken);

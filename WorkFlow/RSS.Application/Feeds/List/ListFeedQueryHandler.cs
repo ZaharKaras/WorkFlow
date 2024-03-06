@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using RSS.Application.DTOs;
+using RSS.Core.Exceptions;
 using RSS.Core.Interfaces;
 
 namespace RSS.Application.Feeds.List
@@ -20,6 +21,11 @@ namespace RSS.Application.Feeds.List
 		{
 			var feeds = _mapper.Map<IEnumerable<FeedDTO>>(
 				await _feedRepository.GetByUserIdAsync(request.userId));
+
+			if(feeds is null)
+			{
+				throw new UserNotFoundException(request.userId);
+			}
 
 			return feeds;
 		}

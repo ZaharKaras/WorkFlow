@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using RSS.Application.Services;
-using RSS.Core.Interfaces;
+using RSS.Application.Services.Interfaces;
 
 namespace RSS.Application
 {

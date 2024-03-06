@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
 using RSS.Application.DTOs;
-using RSS.Core.Entities;
+using RSS.Application.Services.Interfaces;
+using RSS.Core.Exceptions;
 using RSS.Core.Interfaces;
 
 namespace RSS.Application.Feeds.Get
@@ -25,6 +26,11 @@ namespace RSS.Application.Feeds.Get
 		public async Task<IEnumerable<ItemDTO>> Handle(GetFeedQuery request, CancellationToken cancellationToken)
 		{
 			var feed = await _feedRepository.GetByIdAsync(request.id, cancellationToken);
+
+			if (feed is null)
+			{
+				throw new FeedNotFoundException(request.id);
+			}
 
 			var items = _mapper.Map<IEnumerable<Item>>(
 				_parseService.ParseItemAsync(feed!.Link));
