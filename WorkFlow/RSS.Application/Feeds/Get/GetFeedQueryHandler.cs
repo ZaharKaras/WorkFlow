@@ -32,12 +32,10 @@ namespace RSS.Application.Feeds.Get
 				throw new FeedNotFoundException(request.id);
 			}
 
-			var items = _mapper.Map<IEnumerable<Item>>(
+			var items = _mapper.Map<IEnumerable<ItemDTO>>(
 				_parseService.ParseItemAsync(feed!.Link));
 
-			var itemsDTO = _mapper.Map<IEnumerable<ItemDTO>>(items);
-
-			return itemsDTO;
+			return items;
 		}
 	}
 }

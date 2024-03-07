@@ -8,7 +8,7 @@ namespace RSS.Application.Mapper
 	{
 		public ItemProfile()
 		{
-			CreateMap<SyndicationItem, Item>()
+			CreateMap<SyndicationItem, ItemDTO>()
 				.ForMember(dest => dest.Title, opt => opt
 				.MapFrom(src => src.Title.Text))
 
@@ -18,7 +18,6 @@ namespace RSS.Application.Mapper
 				.ForMember(dest => dest.PubDate, opt => opt
 				.MapFrom(src => src.PublishDate.DateTime));
 
-			CreateMap<Item, ItemDTO>();
 		}
 	}
 }
