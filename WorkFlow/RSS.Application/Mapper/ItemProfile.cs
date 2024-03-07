@@ -17,6 +17,8 @@ namespace RSS.Application.Mapper
 
 				.ForMember(dest => dest.PubDate, opt => opt
 				.MapFrom(src => src.PublishDate.DateTime));
+
+			CreateMap<Item, ItemDTO>();
 		}
 	}
 }

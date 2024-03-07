@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RSS.API.Endpoints;
 using RSS.API.Infrastructure;
 using RSS.Application;
 using RSS.Infastructure;
@@ -45,5 +46,7 @@ app.UseAuthorization();
 app.UseExceptionHandler();
 
 app.MapControllers();
+
+app.AddRssEndpoints();
 
 app.Run();
