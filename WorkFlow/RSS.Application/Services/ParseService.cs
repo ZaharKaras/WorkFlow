@@ -26,57 +26,66 @@ namespace RSS.Application.Services
 
 			var items = new List<SyndicationItem>();
 
-			using var reader = XmlReader.Create(uri, settings);
-
-			while (reader.ReadToFollowing("item"))
+			using (var reader = XmlReader.Create(uri, settings))
 			{
-				string title = string.Empty;
-				string link = string.Empty;
-				string description = string.Empty;
-				string pubDate = string.Empty;
-
-				while (reader.Read())
+				while (reader.ReadToFollowing("item"))
 				{
-					if (reader.NodeType == XmlNodeType.Element)
-					{
-						switch (reader.Name)
-						{
-							case "title":
-								title = reader.ReadElementContentAsString();
-								break;
-							case "link":
-								link = reader.ReadElementContentAsString();
-								break;
-							case "description":
-								description = reader.ReadElementContentAsString();
-								break;
-							case "pubDate":
-								pubDate = reader.ReadElementContentAsString();
-								break;
-							default:
-								reader.Skip();
-								break;
-						}
-					}
-
-					if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "item")
-					{
-						break;
-					}
+					var item = ParseSingleItem(reader);
+					items.Add(item);
 				}
-
-				var item = new SyndicationItem(title, 
-					description, 
-					new Uri(link!), 
-					Guid.NewGuid().ToString(), 
-					DateTimeOffset.Parse(pubDate!));
-
-				items.Add(item);
 			}
 
 			Log.Information("Service send parsed xml");
 
 			return items;
+		}
+
+		private SyndicationItem ParseSingleItem(XmlReader reader)
+		{
+			string title = string.Empty;
+			string link = string.Empty;
+			string description = string.Empty;
+			string pubDate = string.Empty;
+
+			while (reader.Read())
+			{
+				if (reader.NodeType == XmlNodeType.Element)
+				{
+					switch (reader.Name)
+					{
+						case "title":
+							title = reader.ReadElementContentAsString();
+							break;
+						case "link":
+							link = reader.ReadElementContentAsString();
+							break;
+						case "description":
+							description = reader.ReadElementContentAsString();
+							break;
+						case "pubDate":
+							pubDate = reader.ReadElementContentAsString();
+							break;
+						default:
+							reader.Skip();
+							break;
+					}
+				}
+
+				if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "item")
+				{
+					break;
+				}
+			}
+
+			var item = new SyndicationItem(
+				title,
+				description,
+				new Uri(link),
+				Guid.NewGuid().ToString(),
+				DateTimeOffset.Parse(pubDate)
+			);
+
+			return item;
 		}
 	}
 }

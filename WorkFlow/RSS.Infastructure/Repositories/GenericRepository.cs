@@ -15,23 +15,23 @@ namespace RSS.Infastructure.Repositories
 		}
 		public async Task AddAsync(T entity, CancellationToken token = default)
 		{
-			await _dbSet.AddAsync(entity);
+			await _dbSet.AddAsync(entity, token);
 		}
 
-		public async Task DeleteAsync(Guid id, CancellationToken token = default)
+		public async Task DeleteAsync(Guid id)
 		{
 			var entity = await GetByIdAsync(id);
 			_dbSet.Remove(entity!);
 		}
 
-		public async Task<T?> GetByIdAsync(Guid id, CancellationToken token = default)
+		public async Task<T?> GetByIdAsync(Guid id)
 		{
 			return await _dbSet.FindAsync(id);
 		}
 
 		public async Task SaveChangesAsync(CancellationToken token = default)
 		{
-			await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync(token);
 		}
 	}
 }

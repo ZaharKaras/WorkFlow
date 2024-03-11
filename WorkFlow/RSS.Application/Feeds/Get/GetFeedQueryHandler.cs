@@ -25,7 +25,7 @@ namespace RSS.Application.Feeds.Get
 
 		public async Task<IEnumerable<ItemDTO>> Handle(GetFeedQuery request, CancellationToken cancellationToken)
 		{
-			var feed = await _feedRepository.GetByIdAsync(request.id, cancellationToken);
+			var feed = await _feedRepository.GetByIdAsync(request.id);
 
 			if (feed is null)
 			{

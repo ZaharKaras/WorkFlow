@@ -22,7 +22,7 @@ namespace RSS.Application.Feeds.Delete
 				throw new FeedNotFoundException(request.id);
 			}
 
-			await _feedRepository.DeleteAsync(request.id, cancellationToken);
+			await _feedRepository.DeleteAsync(request.id);
 			await _feedRepository.SaveChangesAsync(cancellationToken);
 		}
 	}
