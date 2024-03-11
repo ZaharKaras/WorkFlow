@@ -1,4 +1,5 @@
-﻿using Board.Application.Boards.Create;
+﻿using Board.API.Email.Interfaces;
+using Board.Application.Boards.Create;
 using Board.Application.Boards.DTOs;
 using Board.Application.Boards.Update;
 using Board.Application.BoardUsers.AddMember;

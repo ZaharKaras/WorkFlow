@@ -2,6 +2,11 @@ using Board.Infrastructure;
 using Board.Application;
 using Microsoft.EntityFrameworkCore;
 using Board.API.Middlewares;
+using Hangfire;
+using StackExchange.Redis;
+using Hangfire.Redis.StackExchange;
+using Board.API.Email.Interfaces;
+using Board.API.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +18,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-		options.UseNpgsql(
-			builder.Configuration.GetConnectionString("DefaultConnection")));
+	options.UseNpgsql(
+		builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Hangfire client
+builder.Services.AddHangfire(configuration => configuration
+	.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+	.UseSimpleAssemblyNameTypeSerializer()
+	.UseRecommendedSerializerSettings()
+	.UseRedisStorage(builder.Configuration.GetSection("Redis:ConnectionString").Value!));
+
+//Hangfire server
+builder.Services.AddHangfireServer();
 
 builder.Services
 	.AddInfrastructure()
@@ -32,6 +47,9 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseHangfireDashboard();
+app.MapHangfireDashboard("/hangfire");
 
 app.UseAuthorization();
 
