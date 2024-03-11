@@ -5,8 +5,6 @@ using Board.API.Middlewares;
 using Hangfire;
 using StackExchange.Redis;
 using Hangfire.Redis.StackExchange;
-using Board.API.Email.Interfaces;
-using Board.API.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
