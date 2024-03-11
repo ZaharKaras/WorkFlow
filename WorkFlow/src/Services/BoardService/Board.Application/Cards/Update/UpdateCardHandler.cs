@@ -1,6 +1,8 @@
 ﻿using Board.Core.Exceptions.Cards;
 using Board.Core.Interfaces;
+using Hangfire;
 using MediatR;
+using Serilog;
 
 namespace Board.Application.Cards.Update
 {
@@ -46,7 +48,10 @@ namespace Board.Application.Cards.Update
 
 			foreach(var assignee in assignees)
 			{
-				_emailService.SendEmail(assignee.ToString(), $"Card: {cardId}", "Card's state was changed");
+				var jobId = BackgroundJob.Enqueue<IEmailService>(job =>
+					job.SendEmail(assignee.ToString(), $"Card: {cardId}", "Card's state was changed"));
+
+				Log.Information($"{jobId} job was started");
 			}
 		}
 	}

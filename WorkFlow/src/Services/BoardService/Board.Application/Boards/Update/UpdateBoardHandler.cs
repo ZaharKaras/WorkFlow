@@ -1,6 +1,9 @@
 ﻿using Board.Core.Exceptions.Boards;
 using Board.Core.Interfaces;
+using Hangfire;
+using Hangfire.Logging.LogProviders;
 using MediatR;
+using Serilog;
 
 namespace Board.Application.Boards.Update
 {
@@ -43,7 +46,10 @@ namespace Board.Application.Boards.Update
 
 			foreach(var member in members)
 			{
-				_emailService.SendEmail(member.ToString(), $"Board: {boardId}", "Board's state was changed");
+				var jobId = BackgroundJob.Enqueue<IEmailService>(job =>
+					job.SendEmail(member.ToString(), $"Board: {boardId}", "Board's state was changed"));
+
+				Log.Information($"{jobId} job was started");
 			}
 		}
 	}
