@@ -1,0 +1,28 @@
+version: '3.4'
+
+services:
+  rss.api:
+    image: ${DOCKER_REGISTRY-}rssapi
+    build:
+      context: .
+      dockerfile: RSS.API/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+
+  rss.db:
+    image: postgres:latest
+    container_name: board.database
+    environment:
+      - POSTGRES_DB=boards_service
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=11012004
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" 
+
+volumes:
+  postgres_data:
