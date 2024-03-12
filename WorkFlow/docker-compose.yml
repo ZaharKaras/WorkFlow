@@ -1,0 +1,48 @@
+version: '3.7'
+
+networks:
+  dev:
+    driver: bridge
+
+services:
+  identity.api:
+    container_name: identity.api
+    image: ${DOCKER_REGISTRY-}identityapi
+    build:
+      context: .
+      dockerfile: src/Services/Identity/Identity.API/Dockerfile
+    depends_on:
+      - "mongodb"
+      - "redis"
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - dev
+    links:
+      - "redis" 
+
+  mongodb:
+    container_name: identity.db
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-data:/data
+    networks:
+      - dev
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    command: redis-server
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+    networks:
+      - dev
+
+volumes:
+  mongodb-data:
+  redis-data:
