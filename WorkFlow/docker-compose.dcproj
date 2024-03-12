@@ -4,7 +4,14 @@
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
     <DockerPublishLocally>False</DockerPublishLocally>
+<<<<<<< HEAD
     <ProjectGuid>1efb17e9-c210-4f14-bbf8-31548b197ea9</ProjectGuid>
+=======
+    <ProjectGuid>a8a746e7-200e-48e6-a4d0-7e913d83e6d2</ProjectGuid>
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
+    <DockerServiceName>identity.api</DockerServiceName>
+>>>>>>> 6c964979b6171ec9718ddb6747a2ae89c28641df
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
