@@ -5,6 +5,14 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{FC2DA34B-24F7-4B10-A79E-F85A8728DF65}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{28837E65-DECE-4257-846E-5C0EADDCCC61}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{317D5058-1429-4B55-B9AB-3407785D850E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateway", "ApiGateway", "{722609E5-09BF-4AF6-88A3-EE22C7845F97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcelotApiGateway", "src\ApiGateways\OcelotApiGateway\OcelotApiGateway.csproj", "{CC42A320-EDEA-474B-91FA-315A5FA5472C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +23,18 @@ Global
 		{FC2DA34B-24F7-4B10-A79E-F85A8728DF65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC2DA34B-24F7-4B10-A79E-F85A8728DF65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC2DA34B-24F7-4B10-A79E-F85A8728DF65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC42A320-EDEA-474B-91FA-315A5FA5472C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC42A320-EDEA-474B-91FA-315A5FA5472C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC42A320-EDEA-474B-91FA-315A5FA5472C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC42A320-EDEA-474B-91FA-315A5FA5472C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{317D5058-1429-4B55-B9AB-3407785D850E} = {28837E65-DECE-4257-846E-5C0EADDCCC61}
+		{722609E5-09BF-4AF6-88A3-EE22C7845F97} = {28837E65-DECE-4257-846E-5C0EADDCCC61}
+		{CC42A320-EDEA-474B-91FA-315A5FA5472C} = {722609E5-09BF-4AF6-88A3-EE22C7845F97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0F1CB286-B1DE-46B9-A81F-32F0513439EF}
