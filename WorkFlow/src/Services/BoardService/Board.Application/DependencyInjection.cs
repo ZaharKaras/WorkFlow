@@ -18,9 +18,6 @@ namespace Board.Application
 
 			services.AddAutoMapper(assembly);
 
-			services.AddScoped<IBoardService, BoardService>();
-			services.AddScoped<ICardService, CardService>();
-
 			return services;
 		}
 	}
